@@ -12,29 +12,29 @@ write a new specification.
 Or like Hermann Hesse said: 
 
 bq. Wie jede Blüte welkt
-bq. und jede Jugend dem Alter weicht,
-bq. blüht jede Lebensstufe,
-bq. blüht jede Weisheit auch und jede Tugend
-bq. zu ihrer Zeit und darf nicht ewig dauern.
-bq. Es muss das Herz bei jedem Lebensrufe
-bq. bereit zum Abschied sein und Neubeginne,
-bq. um sich in Tapferkeit und ohne Trauern
-bq. in and're, neue Bindungen zu geben.
-bq. Und jedem Anfang wohnt ein Zauber inne,
-bq. der uns beschützt und der uns hilft zu leben.
-bq. Wir sollen heiter Raum um Raum durchschreiten,
-bq. an keinem wie an einer Heimat hängen,
-bq. der Weltgeist will nicht fesseln uns und engen,
-bq. er will uns Stuf' um Stufe heben, weiten!
-bq. Kaum sind wir heimisch einem Lebenskreise
-bq. und traulich eingewohnt,
-bq. so droht Erschlaffen!
-bq. Nur wer bereit zu Aufbruch ist und Reise,
-bq. mag lähmender Gewohnheit sich entraffen.
-bq. Es wird vielleicht auch noch die Todesstunde
-bq. uns neuen Räumen jung entgegen senden:
-bq. des Lebens Ruf an uns wird niemals enden.
-bq. Wohlan denn, Herz, nimm Abschied und gesunde! 
+und jede Jugend dem Alter weicht,
+blüht jede Lebensstufe,
+blüht jede Weisheit auch und jede Tugend
+zu ihrer Zeit und darf nicht ewig dauern.
+Es muss das Herz bei jedem Lebensrufe
+bereit zum Abschied sein und Neubeginne,
+um sich in Tapferkeit und ohne Trauern
+in and're, neue Bindungen zu geben.
+Und jedem Anfang wohnt ein Zauber inne,
+der uns beschützt und der uns hilft zu leben.
+Wir sollen heiter Raum um Raum durchschreiten,
+an keinem wie an einer Heimat hängen,
+der Weltgeist will nicht fesseln uns und engen,
+er will uns Stuf' um Stufe heben, weiten!
+Kaum sind wir heimisch einem Lebenskreise
+und traulich eingewohnt,
+so droht Erschlaffen!
+Nur wer bereit zu Aufbruch ist und Reise,
+mag lähmender Gewohnheit sich entraffen.
+Es wird vielleicht auch noch die Todesstunde
+uns neuen Räumen jung entgegen senden:
+des Lebens Ruf an uns wird niemals enden.
+Wohlan denn, Herz, nimm Abschied und gesunde! 
   
 And because this is really going to be a blog about programming, here's a 
 code snippet: 
