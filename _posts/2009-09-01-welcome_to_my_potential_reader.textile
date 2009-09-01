@@ -1,4 +1,9 @@
-h1. Welcome
+---
+layout: default
+title: To the what and _why of opening a new blog
+---
+
+h1. {{ page.title }}
 
 This is a welcome to you, dear potential reader. Again, I take the jump - 
 opening a blog, looking at a fresh flower in spring, trusting a new friend, 
