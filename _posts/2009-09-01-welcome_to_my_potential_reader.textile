@@ -1,12 +1,17 @@
 ---
 layout: default
 title: To the what and _why of opening a new blog
+tags: 
+  - philosophy
+  - snafu
+  - welcome
+  - tagging_is_random
 ---
 
 h1. {{ page.title }}
 
 This is a welcome to you, dear potential reader. Again, I take the jump - 
-opening a blog, looking at a fresh flower in spring, trusting a new friend, 
+opening a blog, blossoming like a flower come spring, trusting a new friend, 
 write a new specification. 
 
 Or like Hermann Hesse said: 
@@ -35,6 +40,7 @@ Es wird vielleicht auch noch die Todesstunde
 uns neuen Räumen jung entgegen senden:
 des Lebens Ruf an uns wird niemals enden.
 Wohlan denn, Herz, nimm Abschied und gesunde! 
+
   
 And because this is really going to be a blog about programming, here's a 
 code snippet: 
@@ -49,6 +55,6 @@ code snippet:
   end
 </code></pre>
 
-Oh and .. like you might have figured by now: This is a test entry that only
-serves to populate an otherwise empty design. Like those really shiny new
-buildings where no one has lived – beautiful but empty, a new shirt. 
+Oh and .. like you might have figured out by now: This is a test entry that
+only serves to populate an otherwise empty design. Like those really shiny new
+buildings where no one has lived – beautiful but empty, a new shirt.

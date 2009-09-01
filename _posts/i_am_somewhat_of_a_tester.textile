@@ -1,0 +1,67 @@
+---
+layout: default
+title: Confession: I am somewhat of a tester
+tags: 
+  - automated testing
+  - bdd
+  - confession
+  - stubs
+  - mocks
+---
+
+h1. {{ page.title }}
+
+I can't deny it. After only minutes of writing real code I long for the snug
+comfort of well written behavioural specifications (also known as tests).
+"Specs":http://rspec.info are like sex ... only stupid people would not want
+it (I know the real quote is different, I just got bored with my own writing).
+The point I was going to make is: Even if your specifications (again: tests)
+are written badly, they still beat not having any by _so much_!
+
+h2. Writing specifications first
+
+Any yes, to really get your coder level up, you will need to write
+specifications before you write the code. This sounds terribly hard and at
+first it is. 
+
+Why is it hard? Because _you need to know what you are going to write before you do._ 
+But that's another blog post there. 
+
+
+h1. Frequently seen stereotypes (FSS)
+
+A few stereotypes and my answers: 
+
+h2. But .. some things can't be tested
+
+No. You are not asking the right question. It's not: "can it be tested
+automatically?", its "how much does it cost?", weighted against the benefit of
+having tests. That discussion tends to be sharper around the edges.
+
+Also, you might want to consider _stubbing_ and _mocking_, two - no, really
+just one - essential tool(s) in any developers toolbox. Then you should
+look at "mockingobjects.com":http://mockingobjects.com and a few other sites
+and practice daily. 
+
+To be fair: Some things can be pretty hard to test. *Be stubborn*. If you can
+show how it pays off to have a test, you can test it. Take a look at the
+consumer product industry: A simple childs toy is tested more thoroughly than
+the average piece of code. If all else fails, use a robotic arm that pounds
+your code like a wild monkey, looking for wear and inflammability. Know how 
+many miles your shoes will go before holes show up. 
+
+h2. Its all just a waste of time, I can write my code just right
+
+That probably used to be the case. Or even is the case. It's just .. I hear
+this a lot from people who mostly work alone. And on small(ish) projects. 
+
+Working in teams is another thing altogether. You will not be able to keep 
+all details in your mind like you used to. Plus, people break stuff. Mostly by
+making something else better. You need something to tie these forces together, 
+making them visible. 
+
+Oh and... if you still think you can write code without tests just fine - go 
+and ask the next guy how much time he spends reading your code before he can
+modify it. That is: modify it and still be sure that nothing breaks. 
+
+h2. 
