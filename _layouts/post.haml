@@ -1,0 +1,24 @@
+---
+layout: default
+---
+#post
+  = page.title
+  %p.subtitle
+    Written
+    = page.date.strftime("%Y-%M-%d"), '.'
+    Tagged
+    =  page.tags.map { |tag| tag_link(tag) }.join(', ')
+
+  -# Without the squiggly, Haml will indent highlighted code. 
+  ~ content
+  
+  #older_and_newer
+    - if page.next
+      %p
+        %strong Newer:
+        = page.next
+    - if page.previous
+      %p
+        %strong Older:
+        = page.previous
+  

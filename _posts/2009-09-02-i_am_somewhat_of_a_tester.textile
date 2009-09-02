@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: post
 title: "Confession: I am somewhat of a tester"
 tags: 
   - automated testing
@@ -8,8 +8,6 @@ tags:
   - stubs
   - mocks
 ---
-
-h1. {{ page.title }}
 
 I can't deny it. After only minutes of writing real code I long for the snug
 comfort of well written behavioural specifications (also known as tests).

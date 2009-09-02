@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: post
 title: To the what and _why of opening a new blog
 tags: 
   - philosophy
@@ -7,8 +7,6 @@ tags:
   - welcome
   - tagging_is_random
 ---
-
-h1. {{ page.title }}
 
 This is a welcome to you, dear potential reader. Again, I take the jump - 
 opening a blog, blossoming like a flower come spring, trusting a new friend, 
