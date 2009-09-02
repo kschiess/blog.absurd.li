@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Confession: I am somewhat of a tester
+title: "Confession: I am somewhat of a tester"
 tags: 
   - automated testing
   - bdd
