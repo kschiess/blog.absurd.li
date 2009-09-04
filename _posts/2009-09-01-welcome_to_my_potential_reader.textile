@@ -43,7 +43,7 @@ Wohlan denn, Herz, nimm Abschied und gesunde!
 And because this is really going to be a blog about programming, here's a 
 code snippet: 
 
-<pre><code>
+<pre class="sh_ruby"><code>
   # This is totally unrelated to anything, but better than foo and bar.
   # Voila. I give you: The identity line filter. 
   class LineFilter
