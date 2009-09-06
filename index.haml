@@ -2,9 +2,14 @@
 layout: default
 title: ima progrmr
 ---
-- site.posts.group_by { |post| post.date.month }.each do |month, posts|
-  - posts.group_by { |post| post.date.day }.each do |day, posts|
-    %h3= posts.first.date.strftime("%B #{countify day}")
+
+- current_year = nil    # ugly, but good enough
+- group_posts_by_month_and_day(site.posts) do |year, month, day, posts|
+  - if current_year != year
+    - current_year = year
+    .year= year.to_s.last(2)
+  %dl
+    %dt= posts.first.date.strftime("%B #{countify day}")
     - for post in posts
-      .post_link
-      %a{:href => post.url}= post.title
+      %dd
+        %a{:href => post.url}= post.title

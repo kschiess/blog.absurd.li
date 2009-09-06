@@ -17,4 +17,14 @@ module Helpers
       "#{number}th"
     end
   end
+  
+  def group_posts_by_month_and_day(posts)
+    group = [:year, :month, :day]
+    posts.reverse.group_by { 
+      |post| 
+      group.map { |field| post.date.send(field) }
+    }.each do |(year, month, day), posts|
+      yield(year, month, day, posts)
+    end
+  end
 end
