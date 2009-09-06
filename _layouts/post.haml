@@ -1,11 +1,13 @@
 ---
 layout: default
 ---
-#post
-  = page.title
-  %p.subtitle
+.post
+  %h1= page.title
+  
+  .meta
     Written
-    = page.date.strftime("%Y-%M-%d"), '.'
+    = page.date.strftime("%B #{countify page.date.day} %Y")
+    <br/>
     Tagged
     =  page.tags.map { |tag| tag_link(tag) }.join(', ')
 
@@ -16,9 +18,9 @@ layout: default
     - if page.next
       %p
         %strong Newer:
-        = page.next
+        =# page.next
     - if page.previous
       %p
         %strong Older:
-        = page.previous
+        =# page.previous
   

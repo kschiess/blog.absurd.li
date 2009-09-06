@@ -23,8 +23,8 @@ Es muss das Herz bei jedem Lebensrufe
 bereit zum Abschied sein und Neubeginne,
 um sich in Tapferkeit und ohne Trauern
 in and're, neue Bindungen zu geben.
-Und jedem Anfang wohnt ein Zauber inne,
-der uns beschützt und der uns hilft zu leben.
+*Und jedem Anfang wohnt ein Zauber inne,
+der uns beschützt und der uns hilft zu leben.*
 Wir sollen heiter Raum um Raum durchschreiten,
 an keinem wie an einer Heimat hängen,
 der Weltgeist will nicht fesseln uns und engen,
@@ -44,13 +44,14 @@ And because this is really going to be a blog about programming, here's a
 code snippet: 
 
 <pre class="sh_ruby"><code>
-  # This is totally unrelated to anything, but better than foo and bar.
-  # Voila. I give you: The identity line filter. 
-  class LineFilter
-    def filter(line)
-      line
-    end
+00000000001111111111222222222233333333334444444444555555555566666666666777777777788888888
+# This is totally unrelated to anything, but better than foo and bar.
+# Voila. I give you: The identity line filter. 
+class LineFilter
+  def filter(line)
+    line
   end
+end
 </code></pre>
 
 Oh and .. like you might have figured out by now: This is a test entry that

@@ -1,9 +1,10 @@
 ---
 layout: default
-title: Kaspar Schiess </rant>
+title: ima progrmr
 ---
-%ul
-  - for post in site.posts
-    %li
-      = post.date
+- site.posts.group_by { |post| post.date.month }.each do |month, posts|
+  - posts.group_by { |post| post.date.day }.each do |day, posts|
+    %h3= posts.first.date.strftime("%B #{countify day}")
+    - for post in posts
+      .post_link
       %a{:href => post.url}= post.title
