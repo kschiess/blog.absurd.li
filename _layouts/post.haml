@@ -1,26 +1,33 @@
 ---
 layout: default
 ---
+#older_and_newer
+  - if page.next
+    %p
+      %strong Newer:
+      =# page.next
+  - if page.previous
+    %p
+      %strong Older:
+      =# page.previous
+
 .post
-  %h1= page.title
-  
   .meta
-    Written
-    = page.date.strftime("%B #{countify page.date.day} %Y")
+    = page.date.strftime("%B&nbsp;#{countify page.date.day}&nbsp;%Y")
     <br/>
     Tagged
     =  page.tags.map { |tag| tag_link(tag) }.join(', ')
 
+  %h1= page.title
+  
   -# Without the squiggly, Haml will indent highlighted code. 
   ~ content
   
-  #older_and_newer
-    - if page.next
-      %p
-        %strong Newer:
-        =# page.next
-    - if page.previous
-      %p
-        %strong Older:
-        =# page.previous
+  #disqus_thread
+  -# Thanks to Henrik Nyh who figured this all out
+  :javascript
+    var disqus_developer = location.host.match(/\.dev$|^localhost/) ? 1 : 0;
+  %script{ :type => "text/javascript", :src => "http://disqus.com/forums/absurdli/embed.js" }
+  %noscript <a href="http://absurdli.disqus.com/?url=ref">View the discussion thread.</a>
+  
   

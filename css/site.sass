@@ -1,51 +1,65 @@
+!content_width = 710px
+!code_outset = 130px
+
+#everything
+  width: 100%
+  min-width= !content_width
+  min-height: 100%
+  position: relative
+  
 body 
-  :font-size 100%
-  :margin 0
-  :padding 0
-  :font 1em optima, arial, clean, sans-serif
-  :line-height 1.5em
+  font-size: 100%
+  margin: 0
+  padding: 0
+  font: 1em optima, arial, clean, sans-serif
+  line-height: 1.5em
+  height: 100%
+  border: 1px solid red
+  
 pre
-  :padding 10px  
+  padding: 10px  
   
 h1
-  :font-size 1.2em
+  font-size: 1.2em
   
 h2
-  :font-size 1em
+  font-size: 1em
 
 h3
-  :font-size 1em
+  font-size: 1em
 
 h4
-  :font-size 1.1em
+  font-size: 1.1em
   
 img 
-  :border 0
+  border: 0
   
 blockquote
-  :font-style italic
+  font-style: italic
   
 .content
-  :margin-left auto
-  :margin-right auto
-  :margin-bottom 100px
-  :margin-top 100px
-  :width 650px
+  margin-left: auto
+  margin-right: auto
+  margin-bottom: 100px
+  margin-top: 100px
+  width = !content_width
   
-  p, h2
-    :padding-left 70px
-    :padding-right 70px
-    
-  ul.posts
-    li
-      :list-style-type none
-    
+  p, h2, h1
+    padding-left= !code_outset
+    padding-right= !code_outset
+
+  .meta
+    float: right
+    font-size: 0.8em
+    line-height: 1em
+    width: 140px
+        
 .tagline, .copyright
-  :width 100%
-  :text-align center
-  :background-color #ccc
-  :color #fff
+  width: 100%
+  text-align: center
+  background-color: #ccc
+  color: #fff
   
   a 
-    :text-decoration none
-    :color #fff
+    text-decoration: none
+    color: #fff
