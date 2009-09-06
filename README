@@ -1,0 +1,8 @@
+
+This is the blog at http://blog.absurd.li in its source form. Please look 
+at that url for a copyright notice.
+
+To compile this yourself you need to use a haml/sass enabled jekyll, like 
+the one that can be found at http://github.com/kschiess/jekyll.
+
+(c) Kaspar Schiess 2009
