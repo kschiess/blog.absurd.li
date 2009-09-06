@@ -11,10 +11,6 @@ tags:
 
 I can't deny it. After only minutes of writing real code I long for the snug
 comfort of well written behavioural specifications (also known as tests).
-"Specs":http://rspec.info are like sex ... only stupid people would not want
-it (I know the real quote is different, I just got bored with my own writing).
-The point I was going to make is: Even if your specifications (again: tests)
-are written badly, they still beat not having any by _so much_!
 
 h2. Writing specifications first
 
@@ -45,8 +41,7 @@ To be fair: Some things can be pretty hard to test. *Be stubborn*. If you can
 show how it pays off to have a test, you can test it. Take a look at the
 consumer product industry: A simple childs toy is tested more thoroughly than
 the average piece of code. If all else fails, use a robotic arm that pounds
-your code like a wild monkey, looking for wear and inflammability. Know how 
-many miles your shoes will go before holes show up. 
+your keyboard like a wild monkey, looking for wear and inflammability. 
 
 h2. Its all just a waste of time, I can write my code just right
 
@@ -61,5 +56,3 @@ making them visible.
 Oh and... if you still think you can write code without tests just fine - go 
 and ask the next guy how much time he spends reading your code before he can
 modify it. That is: modify it and still be sure that nothing breaks. 
-
-h2. 

@@ -3,13 +3,11 @@ layout: default
 ---
 #older_and_newer
   - if page.next
-    %p
-      %strong Newer:
-      =# page.next
+    .newer
+      = link_to_page(page.next, :text => '&gt;&gt;&gt;')
   - if page.previous
-    %p
-      %strong Older:
-      =# page.previous
+    .older
+      = link_to_page(page.previous, :text => '&lt;&lt;&lt;')
 
 .post
   .meta

@@ -5,7 +5,14 @@ require 'active_support'
 module Helpers
   # Links to a tag.
   def tag_link(tag)
-    link_to(h(tag), '/tag#' + CGI.escape(tag))
+    link_to(h(tag), '/tag.html#' + CGI.escape(tag))
+  end
+  
+  # Links to a page
+  #
+  def link_to_page(page, opts={})
+    opts[:text] ||= h(page.title)
+    link_to(opts[:text], page.url)
   end
   
   def countify(number)

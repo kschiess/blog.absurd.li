@@ -1,0 +1,18 @@
+---
+layout: post
+title: Perceived Advantages of Writing the Specification first
+tags: 
+  - bdd
+  - specification
+  - opinion
+published: false
+---
+
+h2. Specs are an up to date documentation of what the code does.
+
+If you apply some sort of quality control on your specifications, they will 
+be readable. 
+
+* Testable code yields clean interfaces
+* Reflection on what code to even write is forced early
+

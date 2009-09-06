@@ -14,13 +14,13 @@ body
   font: 1em optima, arial, clean, sans-serif
   line-height: 1.5em
   height: 100%
-  border: 1px solid red
   
 pre
   padding: 10px  
   
 h1
   font-size: 1.2em
+  font-variant: small-caps
   
 h2
   font-size: 1em
@@ -43,16 +43,35 @@ blockquote
   margin-bottom: 100px
   margin-top: 100px
   width = !content_width
+  position: relative
   
-  p, h2, h1
+  p, h2, h1, dl
     padding-left= !code_outset
+    padding-right= !code_outset
+    
+  ul, ol
+    padding-left= !code_outset + 30px
     padding-right= !code_outset
 
   .meta
     float: right
     font-size: 0.8em
     line-height: 1em
-    width: 140px
+    width: 130px
+    
+  #older_and_newer
+    a 
+      text-decoration: none
+      color: #aaa
+    
+    .newer
+      position: absolute
+      right= !code_outset
+      top: -2em
+    .older 
+      position: absolute
+      top: -2em
+      left= !code_outset
         
 .tagline, .copyright
   width: 100%
@@ -69,3 +88,4 @@ blockquote
 .year
   font-size: 4em
   line-height: 1em
+  float: left
