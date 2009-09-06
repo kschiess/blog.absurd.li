@@ -5,14 +5,65 @@ tags:
   - bdd
   - specification
   - opinion
+  - mocks 
+  - stubs
+  - philosophy
+  - long
 published: false
 ---
+
+I will try to summarize some of the perceived advantages of writing
+specifications first. The word perceived indicates that I don't mean to say
+that the ideas presented here are hard facts. Rather, they are based on the 
+anecdotal evidence of my senses and my experience. 
 
 h2. Specs are an up to date documentation of what the code does.
 
 If you apply some sort of quality control on your specifications, they will 
-be readable. 
+be readable. They should also reflect what you or (to a varying degree) your 
+customer expect from the code. That said: Look at your specs as the only
+up to date documentation for the code. 
 
-* Testable code yields clean interfaces
+Having those specs makes your situation a lot better than having only the
+code. While you can't refactor code and keep it at the same time (for
+documentation purposes on what you already have), you _can_ refactor code and
+keep the specifications. 
+
+Specs encode all the choices you've made during writing code. People that
+don't write specs have also made these choices. _Up in their head_. And then
+forgot about it before lunch. It doesn't feel differently, the code commits
+might even be exactly the same. Except, some time later, you (the guy
+who does BDD) will still have a record of what you thought of (or didn't) when
+writing the code. 
+
+h2. Testable code yields clean interfaces
+
+Now that's something you might hear a lot and dismiss as being just too good
+to be true. It really is (if you want to take my word for it). Allow me to sketch 
+this up: Specs need to be isolated to be worth your time. Isolation is one
+of the goals (if not _the_ goal) of good design. Thus specs lead to good 
+design.
+
+h3. Specs should be isolated
+
+To be of any use, your specs need only address one thing at a time. Nobody can
+provide a useful description of a system by changing the topic in every other
+sentence. Mocks and Stubs let you keep this kind of focus: You just pretend
+you have all the parts already and specify just the missing piece.
+
+Pretending you have something has the nice property of getting you to figure
+out what that is without thinking about it directly. Design is often easier 
+if done casually, like in role play during some OOP methodologies. 
+
+Pretending by mocking/stubbing will naturally let you drift towards interfaces
+that are easily mocked/stubbed. That often means: 
+
+* Few complex dependencies
+* Clear responsibilites
+* Few method parameters
+* Separating actions from getters
+
+
+
 * Reflection on what code to even write is forced early
 
