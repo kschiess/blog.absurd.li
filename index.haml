@@ -3,6 +3,9 @@ layout: default
 title: ima progrmr
 ---
 
+.meta
+  = link_to('about me', 'http://absurd.li')
+
 - current_year = nil    # ugly, but good enough
 - group_posts_by_month_and_day(site.posts) do |year, month, day, posts|
   - if current_year != year
