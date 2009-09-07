@@ -26,12 +26,12 @@ module Helpers
   end
   
   def group_posts_by_month_and_day(posts)
-    group = [:year, :month, :day]
+    group = [:year, :month]
     posts.reverse.group_by { 
       |post| 
       group.map { |field| post.date.send(field) }
-    }.each do |(year, month, day), posts|
-      yield(year, month, day, posts)
+    }.each do |(year, month), posts|
+      yield(year, month, posts)
     end
   end
 end

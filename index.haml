@@ -7,12 +7,12 @@ title: ima progrmr
   = link_to('about me', 'http://absurd.li')
 
 - current_year = nil    # ugly, but good enough
-- group_posts_by_month_and_day(site.posts) do |year, month, day, posts|
+- group_posts_by_month_and_day(site.posts) do |year, month, posts|
   - if current_year != year
     - current_year = year
     .year= year.to_s.last(2)
   %dl
-    %dt= posts.first.date.strftime("%B #{countify day}")
+    %dt= posts.first.date.strftime("%B")
     - for post in posts
       %dd
         %a{:href => post.url}= post.title
