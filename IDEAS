@@ -1,2 +1,34 @@
 TODO Write about specification and code and their relationship. Not writing down the spec, about loosing it.
 TODO Write about why coming up with the specification is hard. 
+
+h2. Testable code yields clean interfaces
+
+Now that's something you might hear a lot and dismiss as being just too good
+to be true. It really is (if you want to take my word for it). Allow me to sketch 
+this up: Specs need to be isolated to be worth your time. Isolation is one
+of the goals (if not _the_ goal) of good design. Thus specs lead to good 
+design.
+
+h3. Specs should be isolated
+
+To be of any use, your specs need only address one thing at a time. Nobody can
+provide a useful description of a system by changing the topic in every other
+sentence. Mocks and Stubs let you keep this kind of focus: You just pretend
+you have all the parts already and specify just the missing piece.
+
+Pretending you have something has the nice property of getting you to figure
+out what that is without thinking about it directly. Design is often easier 
+if done casually, like in role play during some OOP methodologies. 
+
+Pretending by mocking/stubbing will naturally let you drift towards interfaces
+that are easily mocked/stubbed. That often means: 
+
+* Few complex dependencies
+* Clear responsibilities
+* Few method parameters
+* Separating actions from getters
+
+
+
+* Reflection on what code to even write is forced early
+
