@@ -9,7 +9,6 @@ tags:
   - stubs
   - philosophy
   - long
-published: false
 ---
 
 I will try to summarize some of the perceived advantages of writing
@@ -34,15 +33,15 @@ documentation purposes on what you already have), you _can_ refactor code and
 keep the specifications.
 
 Specs encode all the choices you've made during writing code. People that
-don't write specs have also made these choices. _But only mentally_. And then
-forgot about it before lunch. It doesn't feel differently, the code commits
-might even be exactly the same. Except, some time later, you (the guy who does
-BDD) will still have a record of what you thought of (or didn't) when writing
-the code.
+don't write specs have also made these same choices. _But only mentally_. And
+then forgotten about it before lunch. It doesn't feel differently, the code
+commits might even be exactly the same. Except, some time later, you (the guy
+who does "BDD":http://rspec.info) will still have a record of what you thought
+of (or didn't) when writing the code.
 
 I had to maintain code that looked like this once: 
 
-<pre><code class="sh_java">
+<pre class="sh_java"><code>
 public int someFunction(int p1, int p2) {
   // Some code 
   // Some more code
@@ -63,16 +62,16 @@ at all.
 My task was to clean up this piece of code and to rewrite some of it. As it
 happens, no tests/specs were available, making that thin comment everything I
 could hang myself on. In situations like these, you have two choices: Delete
-the whole exception and wait for things that break or leave it in and hope
+the whole exception and wait for things to break or leave it in and hope
 someone else breaks it later. Either way, this is a liability that waits to
-bite you the next time around. Having to remember that functions with a
-positive domain # TODO may return a special negative value that indicates
-mystery going on makes reasoning about the system a complex task.
+bite you the next time around. Having to remember a functions with a positive
+image may return a special negative value that indicates mystery going on
+makes reasoning about the system a complex task.
 
 It would have been an altogether different matter if I had had specifications
 like these:
 
-<pre><code class="sh_ruby">
+<pre class="sh_ruby"><code>
 describe "someFunction" do
   it "should return -1 (exceptionally) when flab hits the fob" do
     obj.someFunction(1, 2).should == -1
