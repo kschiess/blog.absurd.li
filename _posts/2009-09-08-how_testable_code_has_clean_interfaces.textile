@@ -1,0 +1,17 @@
+---
+tags: 
+  - bdd
+published: false
+---
+
+* How testable code has clean interfaces
+
+* Test driving code is a process that yields a certain result
+* Show that the process cannot yield bad results by showing that each 
+  step in the process makes the result converge? 
+  
+* Process steps are
+** Demand a class with given responsibilities 
+** Create that class
+** Demand an environment that the class interacts with
+** Create mocks/stubs for those

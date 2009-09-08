@@ -39,7 +39,7 @@ img
   
 blockquote
   font-style: italic
-  
+    
 .content
   margin-left: auto
   margin-right: auto
@@ -48,14 +48,13 @@ blockquote
   width = !content_width
   position: relative
   
-  p, h2, h1, dl
-    padding-left= !code_outset
-    padding-right= !code_outset
-    
-  ul, ol
-    padding-left= !code_outset + 30px
-    padding-right= !code_outset
+  p, h2, h1, h3, dl, form, textarea, ul, ol
+    margin-left= !code_outset
+    margin-right= !code_outset
 
+  ul, ol
+    padding-left: 30px
+    
   .meta
     float: right
     padding-top: 100px

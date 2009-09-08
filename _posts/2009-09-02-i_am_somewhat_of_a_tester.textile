@@ -1,5 +1,4 @@
 ---
-layout: post
 title: "Confession: I am somewhat of a tester"
 tags: 
   - automated testing

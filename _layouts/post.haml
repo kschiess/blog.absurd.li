@@ -22,10 +22,10 @@ layout: default
   ~ content
   
   #disqus_thread
-  -# Thanks to Henrik Nyh who figured this all out
-  :javascript
-    var disqus_developer = location.host.match(/\.dev$|^localhost/) ? 1 : 0;
-  %script{ :type => "text/javascript", :src => "http://disqus.com/forums/absurdli/embed.js" }
-  %noscript <a href="http://absurdli.disqus.com/?url=ref">View the discussion thread.</a>
+    -# Thanks to Henrik Nyh who figured this all out
+    :javascript
+      var disqus_developer = location.host.match(/\.dev$|^localhost/) ? 1 : 0;
+    %script{ :type => "text/javascript", :src => "http://disqus.com/forums/absurdli/embed.js" }
+    %noscript <a href="http://absurdli.disqus.com/?url=ref">View the discussion thread.</a>
   
   

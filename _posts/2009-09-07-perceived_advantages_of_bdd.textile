@@ -1,5 +1,4 @@
 ---
-layout: post
 title: Perceived Advantages of Writing the Specification first
 tags: 
   - bdd
@@ -84,6 +83,8 @@ for why this ugly snippet has come to be. And I even have a choice: I let it
 stand as it is (for working code can't be all bad) or I rip it out with some
 confidence in what I am doing. 
 
-There's a guy TODO who wants to fly to the moon without the fuel to get back. My
-job isn't like that. I want to be able to go back and revise my choices. That's
-why I write them down.
+There's a
+"guy":http://www.ted.com/talks/bill_stone_explores_the_earth_and_space.html
+who wants to fly to the moon without the fuel to get back. My job isn't like
+that. I want to be able to go back and revise my choices. That's why I write
+them down.

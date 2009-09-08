@@ -1,5 +1,4 @@
 ---
-layout: post
 title: To the what and _why of opening a new blog
 tags: 
   - philosophy

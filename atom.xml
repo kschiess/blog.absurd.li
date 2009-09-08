@@ -21,6 +21,10 @@ layout: nil
    <updated>{{ post.date | date_to_xmlschema }}</updated>
    <id>http://blog.absurd.li{{ post.id }}</id>
    <content type="html">{{ post.content | xml_escape }}</content>
+   {% for tag in post.tags %}
+     <category scheme="http://edward.oconnor.cx/tags/"
+               term="{{ tag }}" label="{{ tag }}" />
+   {% endfor %}
  </entry>
  {% endfor %}
  
