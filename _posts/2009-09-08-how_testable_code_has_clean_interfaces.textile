@@ -1,17 +1,52 @@
 ---
+title: Why testable code is cleaner
 tags: 
   - bdd
-published: false
 ---
 
-* How testable code has clean interfaces
+I am going to try to show in this article how code that is testable/ test
+driven has/uses clean interfaces. What are the telling signs of a good
+interface? I'll pick some and let you know that the list isn't exhaustive:
+
+* A good interface reduces coupling. That means it separates your code into
+  two parts: the inside and the outside.
+
+* The outside doesn't need to know about all the details. Instead, a clear
+  conceptual model is presented to the interface user, allowing him to free up
+  mind real estate for important things.
+
+* An interface should be easy to remember. This might be an artifact of
+  applying those other rules, but really can stand by itself.
+  
+TODO insert link to the very nice presentation on coupling
+TODO order that book
+
+h2. Cleaner, how so?
 
 * Test driving code is a process that yields a certain result
 * Show that the process cannot yield bad results by showing that each 
   step in the process makes the result converge? 
   
 * Process steps are
-** Demand a class with given responsibilities 
-** Create that class
-** Demand an environment that the class interacts with
-** Create mocks/stubs for those
+** Demand a class with given responsibilities  - create it.
+   Clear responsibilities are itself a mark of a good interface. 
+** Demand an environment that the class interacts with -Create mocks/stubs for those
+   Interaction between classes is all about interface. if you get this right
+   the class will be good. 
+   
+   Mocks and stubs itself are more easily created for a given type of interface
+   
+   Example 1: Dependency injection
+   
+   Baz.new is harder to mock than construct with baz and use baz
+   
+   Example 2: Demeters Law
+   
+   foo.bar.baz is harder to mock than foo.baz
+   
+   Example 3: Reduction in complexity
+   
+   foo(a1...a12) is harder to stub than foo(c1, c2)
+
+h2. The process of testing is alike to what we do in our head when trying to understand.
+

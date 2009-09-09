@@ -48,20 +48,18 @@ blockquote
   width = !content_width
   position: relative
   
-  p, h2, h1, h3, dl, form, textarea, ul, ol
+  pre
+    margin-left= -!code_outset
+    width: 97ex
+
+  .post 
     margin-left= !code_outset
     margin-right= !code_outset
-
+  
   ul, ol
     padding-left: 30px
     
-  .meta
-    float: right
-    padding-top: 100px
-    font-size: 0.8em
-    line-height: 1em
-    width: 130px
-    
+      
   #older_and_newer
     a 
       text-decoration: none
@@ -92,5 +90,14 @@ blockquote
 .year
   font-size: 6em
   line-height: 1em
-  float: left
+  position: absolute
+  left: 0px
   
+.meta
+  float: right
+  position: relative
+  right: -130px
+  top: 100px
+  font-size: 0.8em
+  line-height: 1em
+  width: 130px
