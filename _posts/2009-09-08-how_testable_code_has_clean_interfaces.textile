@@ -2,6 +2,10 @@
 title: Why testable code is cleaner
 tags: 
   - bdd
+  - mocks
+  - stubs
+  - coupling
+  - thereisathirdstep
 ---
 
 I am going to try to show in this article how code that is testable/ test
@@ -10,26 +14,44 @@ interface? I'll pick some and let you know that the list isn't exhaustive:
 
 * A good interface reduces coupling. That means it separates your code into
   two parts: the inside and the outside.
-
-* The outside doesn't need to know about all the details. Instead, a clear
-  conceptual model is presented to the interface user, allowing him to free up
-  mind real estate for important things.
-
+* The outside doesn't need to know about all the details of implementation.
+  Instead, a clear conceptual model is presented to the interface user,
+  allowing him to free up mind real estate for important things.
 * An interface should be easy to remember. This might be an artifact of
   applying those other rules, but really can stand by itself.
+* More on this? TODO
   
 TODO insert link to the very nice presentation on coupling
-TODO order that book
 
 h2. Cleaner, how so?
 
-* Test driving code is a process that yields a certain result
-* Show that the process cannot yield bad results by showing that each 
-  step in the process makes the result converge? 
-  
-* Process steps are
-** Demand a class with given responsibilities  - create it.
-   Clear responsibilities are itself a mark of a good interface. 
+If all of the steps that make up the 'BDD/TDD way of doing things' lead to
+cleaner interfaces in code, then the whole process does also. Let's look at
+the basic 'there is a third step(tm)'-model: 
+
+# Write a specification
+# Write code that fulfills the specification
+# Refactor!
+
+Written like this, all the details remain hidden. How are we going to know if
+step N in this description affects aesthetics at all? We clearly cannot. 
+
+Instead, I would like for you to have a look at where interfaces come into 
+play when writing code. Let's assume that you do these 3 steps above repeatedly. 
+Clean interfaces would evolve on a different time scale, over the course of 
+days (and not minutes, like the above). Roughly sketched:
+
+# Integration (acceptance) tests show that you will need to do task _A_. You 
+  write down (demand) a simple way of achieving this, using interface of class
+  _X_.
+# Starting to write it, you identify that it interacts with _Y_ and _Z_.
+
+h2. Starting with rough ideas
+
+
+h2. The nitty gritty
+
+
 ** Demand an environment that the class interacts with -Create mocks/stubs for those
    Interaction between classes is all about interface. if you get this right
    the class will be good. 
@@ -47,6 +69,4 @@ h2. Cleaner, how so?
    Example 3: Reduction in complexity
    
    foo(a1...a12) is harder to stub than foo(c1, c2)
-
-h2. The process of testing is alike to what we do in our head when trying to understand.
 

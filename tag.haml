@@ -3,9 +3,10 @@ layout: default
 title: tag index
 ---
 
-%h1 Tags
-%dl
-  - for (tag, pages) in site.tags
-    %dt{:id => CGI.escape(tag)}= h tag
-    - for page in pages
-      %dd= link_to_page(page)
+.post
+  %h1 Tags
+  %dl
+    - for (tag, pages) in site.tags
+      %dt{:id => CGI.escape(tag)}= h tag
+      - for page in pages
+        %dd= link_to_page(page)
