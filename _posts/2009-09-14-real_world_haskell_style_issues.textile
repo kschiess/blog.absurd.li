@@ -1,0 +1,81 @@
+---
+title: Code Style issues with Real World Haskell
+tags: 
+  - haskell
+  - programming languages
+  - books
+  - rant
+published: false
+---
+
+*NOTE* This obviously needs heavy editing - don't be offended or ready to 
+nitpick on what you read here. Also see the published: false above.
+
+I am reading the book "Real World Haskell"[1] – and enjoying it to my
+surprise. Haskell is tauted to be that really hard to understand language – I 
+find it not as hard to understand, once you've gotten over the syntax that is. 
+
+What I find really hard to understand is why the authors chose a code style 
+this opaque. For instance, when they explain the concept of Functors on page 
+245, they give this type definition: 
+
+<pre><code class="sh_haskell">
+  class Functor f where 
+    fmap :: (a -> b) -> (f a) -> (f b)
+</code></pre>
+
+Is it just me or does that read a bit strangely? The Haskell-Beginner that I
+am recognizes that f is a type argument to the (type)-class definition given,
+but has also a mathematical background that reads f as *f(x, y)* – as a
+function that is. They might have just as well chosen: 
+
+<pre><code class="sh_haskell">
+  class Functor wrapperType where 
+    fmap :: (a -> b) -> (wrapperType a) -> (wrapperType b)
+</code></pre>
+
+Now this reads beautifully as _fmap_ transforming the contents of a wrapped
+type. (No, I am not even going to try to explain this to non Haskell literates
+– it is just too big a task for this small article).
+
+_It gets worse_. On page 246, just a few paragraphs below, they follow up with what I interpret as an attempt to completely throw me off track: 
+
+<pre><code class="sh_haskell">
+  instance Functor Maybe where
+    fmap _ Nothing   = Nothing
+    fmap f (Just x)  = Just f x
+</code></pre>
+
+This time, _*f really is a function*_. Now this declares how _fmap_ handles the _Maybe_ type and is a perfectly reasonable piece of code, except that it reuses the freaky _f_ that is supposed to change meaning every few lines. 
+
+This exemplifies something that I criticize about the book in many places: The
+code style that is presented does not mind the fact that *code is read more
+often than it is written*. Perhaps, again, this is just me and my limited
+understanding of what Haskell is - but being literate in a few languages, I
+guess that this is just the kind of bad style the authors write about
+themselves. Why not simply write: 
+
+<pre><code class="sh_haskell">
+  instance Functor Maybe 
+  where 
+    fmap _ Nothing = Nothing
+    fmap fun (Just x) = Just (fun x)
+</code></pre>
+
+This (in addition to the rename exposed above) would make clear that _fmap_ lifts (or unlifts?) the function _fun_ into the _Maybe_ type. 
+
+It seems that in Haskell, there is really a shortage of lower case letters and you have to try and save up as many as possible. If the above rant looks tame to you, then take this and admit I am right: (page 224, on lifting)
+
+<pre><code class="sh_haskell">
+  liftP2 q f g w x y z = f w x y z `q` g w x y z
+</code></pre>
+
+That's a *series of 18 lower case letters* in a row, lightened up by a few
+cryptic line noise like dots and dashes. This has got to be a joke! Especially
+since this can really be rewritten in many ways and look a lot nicer. (I will
+leave that as an exercise to the reader.)
+
+My growing fondness of the language might come to an abrupt end if I wake up
+to a community that writes this kind of code...
+
+[1] _Real World Haskell_ (Bryan O'Sullivan, John Goerzen, Don Stewart)
