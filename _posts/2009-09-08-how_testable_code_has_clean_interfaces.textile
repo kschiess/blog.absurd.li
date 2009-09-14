@@ -6,6 +6,7 @@ tags:
   - stubs
   - coupling
   - thereisathirdstep
+published: false
 ---
 
 I am going to try to show in this article how code that is testable/ test
