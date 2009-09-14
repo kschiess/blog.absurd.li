@@ -12,7 +12,7 @@ surprise. What I find really hard to understand is why the authors chose a
 code style this opaque. My message to you: 
 _Code really is read more than it is written._ Here's an example straight from the book:
 
-<pre><code class="sh_haskell">
+<pre class="sh_haskell"><code>
   liftP2 q f g w x y z = f w x y z `q` g w x y z
 </code></pre>
 
