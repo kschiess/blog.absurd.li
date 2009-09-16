@@ -1,0 +1,43 @@
+---
+title: How to prevent class unloading in Ruby on Rails
+tags: 
+  - rails
+  - ruby
+  - gotcha
+  - class reloading
+---
+
+Let's assume you have a class that holds a connection to an external system, 
+and you don't want Rails auto(un)loading to mess with that. The advice the 
+rails documentation gives you in this case is simple and correct: Just
+don't let rails autoload your class, instead, require it yourself. 
+
+<pre class="sh_ruby"><code>
+  require 'my_persistent_class'
+</code></pre>
+
+There is _one gotcha_ to this, and a gotcha that conflicts with the natural 
+ordering tendency that every programmer should have. Let's say you're extending
+a rails model with _FeatureX_. It will come natural to you to name that module
+_RailsModel::FeatureX_. This has consequences. 
+
+There is no real way to 'load' that _RailsModel_ by using a require - when
+would you do it? During initialization process, this fails because rails 
+obviously isn't in place yet. And later on – rails will be in place and the
+_RailsModel_ class will already be in the fangs of autoloading. 
+
+And the next time rails autounloads/ autoloads classes, _RailsModel_ – and
+with it _FeatureX_ – will be reloaded as well. *Darn*. The solution to this is
+really simple, but it took me a while to figure this out: Just don't include
+the _FeatureX_ class in the namespace of _RailsModel_. Then doing this in 
+your _environment.rb_ will ensure that your _FeatureX_ isn't unloaded: 
+
+<pre class="sh_ruby"><code>
+  config.after_initialize do
+    require 'feature_x'
+    
+    FeatureX.set_some_persistent_attribute :foo => :bar
+  end
+</code></pre>
+
+Btw: Global variables are really evil.
