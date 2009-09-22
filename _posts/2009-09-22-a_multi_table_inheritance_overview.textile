@@ -10,6 +10,16 @@ published: false
 
 * Introduction, why?
 
+<pre>
+  A
+  |
+  B
+  ^
+  |`------.
+  |       |
+  C       D
+</pre>
+
 h2. Flavours 
 
 h3. table with attr 
@@ -18,13 +28,21 @@ Good for checking, for id generation. Complicated setup.
 
 h3. disjoint tables copying attrs
 
-You can check uniqueness, null, etc.., but there is no good way of generating ids (no common sequence, 
-except probably on some database verndors. )
+You can check uniqueness, null, etc.., but there is no good way of generating
+ids (no common sequence, except probably on some database verndors. )
 
-h3. Polymorphic
+Equals rails polymorphic, A holds connection to C and D directly, they manage
+their own id space.
 
 Downsides are that you cannot check referential integrity, because your table
 essentially holds connections to any of n tables. 
+
+h3. Enterprise Rails solution
+
+Using nullable references (that are separate.) This salvages the referential 
+integrity, but still suffers from common attribute duplication.
+
+You can even write a check that only one is used (exclusive relationship).
 
 h3. Sti
 
@@ -32,8 +50,15 @@ Good solution for the easy cases, becomes cumbersome if you have a lot of
 attributes that are disjoint. You can't check for uniqueness, null, etc.. on
 the database level.
 
-h3. Rubylike solution?
+h2. Differentiation
+
+# How much data is shared?
+# Will we need one single ID space?
+
+h2. Specification for a new solution
+
+* Class names should not be encoded in the database - hinders refactoring
 
 
-* Prior art (armit, enterprise rails, polymorphic assocs)
+h3. Rubylike solution? Combining polymorphic with attr tables?
 
