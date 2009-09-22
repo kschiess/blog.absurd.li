@@ -1,0 +1,39 @@
+---
+title: An overview over the MTI design pattern
+tags: 
+  - activerecord
+  - rails
+published: false
+---
+
+*UNPUBLISHED!*
+
+* Introduction, why?
+
+h2. Flavours 
+
+h3. table with attr 
+
+Good for checking, for id generation. Complicated setup.
+
+h3. disjoint tables copying attrs
+
+You can check uniqueness, null, etc.., but there is no good way of generating ids (no common sequence, 
+except probably on some database verndors. )
+
+h3. Polymorphic
+
+Downsides are that you cannot check referential integrity, because your table
+essentially holds connections to any of n tables. 
+
+h3. Sti
+
+Good solution for the easy cases, becomes cumbersome if you have a lot of
+attributes that are disjoint. You can't check for uniqueness, null, etc.. on
+the database level.
+
+h3. Rubylike solution?
+
+
+* Prior art (armit, enterprise rails, polymorphic assocs)
+
