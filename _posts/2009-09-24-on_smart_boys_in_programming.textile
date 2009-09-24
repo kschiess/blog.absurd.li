@@ -1,0 +1,65 @@
+---
+title: Joel, duct tape is just one of the tools we have.
+tags: 
+  - smart boys
+  - over-engineering
+  - duct tape
+  - lazy
+  - bdd
+  - tdd
+  - testing
+  - delivery
+---
+
+I used to really like what you write 'on software' - now I start really
+hating it. But that is more useful, because you always get me to think. 
+
+The guy with the 
+"duct tape":http://www.joelonsoftware.com/items/2009/09/23.html – I would hate 
+his guts if he was on my team.[1] The little stunt with _prev_ and _next_
+pointers of a linked list rolled into 32bits using _XOR_ – nice. *But very
+immature*. If that guy goes missing, you can basically scrap his code and
+start again. That is not very much better than using multiple inheritance[2]
+and multithreaded COM.
+
+_You are missing a point._ The point is not to deliver software, at least not
+only, but to deliver _working_ software. There are really just two possible
+outcomes: Either the thing you're creating works half-way, or it doesn't.[3]
+If it works half-way, you (or someone else) will have to work on it for the
+whole of its lifetime (ambiguity intended). And the customer doesn't want old
+bugs cropping up again and again. And he wont listen to you if you talk about
+duct tape. He doesn't care.
+
+_Duct tape_ is just one of the tools we have. And as such, it needs to be
+applied where appropriate. Anyone claiming one tool to be vastly better than
+all the others is just wrong, whatever the tool. Your smart boy should learn
+to write code that others can read and maintain. Then he's got a real future
+in software development. 
+
+I think that every talented programmer starts out as duct-tape guy. And then
+some of the things he tapes together come crashing down on him (or on the
+customer). And then he learns. But the dichotomy you're proposing is wrong,
+its not either duct-tape or over-engineering. IMHO, there is a lot of middle
+ground. Just as an example (one is enough) - TDD/BDD practice is to 'do the
+simplest thing that can possibly work'. This one sentence has saved me years
+of mental effort that would ultimately have been invisible to the customer.
+
+The real work is to write working software. Over-engineering and building 
+"a second system":http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FSecond-system_effect 
+is just (busy-work) work evasion. But the duct tape approach is evading work
+as well, by being lazy in the sort of way clever people are.
+
+What I've been wondering. Are you doing Jamie Zawinski any kind of justice
+with your article?
+
+[1] 'Hate his guts' is just more colorful than 'take issues with' – No, I 
+wouldn't hate anyones guts. That is very rare. 
+
+[2] I guess that is just a "typo":http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FInheritance_%28computer_science%29.
+
+[3] About one third of IT projects get cancelled before completing. The other
+two thirds sometimes overrun their budget by as much as twice the original
+estimate. (ie: 'The Standish Group Report', _The Standish Group_, 1995.
+"pdf":http://www.projectsmart.co.uk/docs/chaos-report.pdf) We can't pretend
+this isn't happening and we need to feel responsible for the state of the
+industry.
