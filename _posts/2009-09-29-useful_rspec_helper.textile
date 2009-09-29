@@ -8,7 +8,7 @@ tags:
 ---
 
 Here's a little something that is really useful to put at the end of your 
-+spec/spec_helper.rb+: 
+<code>spec/spec_helper.rb</code>: 
 
 <pre class="sh_ruby"><code>
   # Run away with this. However, if it causes a nightly bug hunt or two, don't
@@ -36,7 +36,7 @@ Afterwards, to quickly debug your specs in TextMate, you just enter
 
 and it will just work, outputting the string you'd expect and not a very short
 line starting with '#' and then nothing. The trick is that the string that is
-originally output (something like '#&lt;Foo:0x128a964&gt;') is converted into 
-+#&amp;lt;Foo:0x128a964>+ which will output just fine.
+originally output (something like '<code>#<Foo:0x128a964></code>') is converted into 
+<code>#&amp;lt;Foo:0x128a964></code> which will output just fine.
 
 You're welcome.
