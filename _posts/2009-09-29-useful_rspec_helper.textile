@@ -1,0 +1,42 @@
+---
+title: A useful addition to your spec_helper.rb
+tags: 
+  - rails
+  - ruby
+  - rspec
+  - tricks
+---
+
+Here's a little something that is really useful to put at the end of your 
++spec/spec_helper.rb+: 
+
+<pre class="sh_ruby"><code>
+  # Run away with this. However, if it causes a nightly bug hunt or two, don't
+  # blame me. Please. 
+  class EscapedOut
+    def initialize(old_io)
+      @old_io = old_io
+    end
+    def write(str)
+      @old_io.write str.gsub(/</, '&lt;')
+    end
+  end
+  $stdout = EscapedOut.new($stdout)  
+</code></pre>
+
+Afterwards, to quickly debug your specs in TextMate, you just enter 
+
+<pre class="sh_ruby"><code>
+  it "some specification" do
+    p some_object  # temporary debug code
+    
+    # some test here that fails for unknown reasons
+  end
+</code></pre>
+
+and it will just work, outputting the string you'd expect and not a very short
+line starting with '#' and then nothing. The trick is that the string that is
+originally output (something like '#&lt;Foo:0x128a964&gt;') is converted into 
++#&amp;lt;Foo:0x128a964>+ which will output just fine.
+
+You're welcome.
