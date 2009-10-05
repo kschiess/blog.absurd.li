@@ -1,0 +1,74 @@
+---
+title: On sharing Rails Models between parts of your Architecture
+tags: 
+  - ruby
+  - rails 
+  - models
+  - soa
+  - services
+  - REST
+  - bdd
+  - tdd
+---
+
+Your rails application is useful to someone. Now he wants to do more, depend
+on the data it handles and use it in other parts of his business. The simplest
+thing to do would be to give him access to your database and just let him 
+have the data, right?
+
+_As it turns out: not really._ While this is a good short term solution, it
+will certainly bite you in the long run. Not everyone accessing your data does
+so in a way that preserves your invariants and integrity constraints. And even
+though I think that <code>ActiveRecord</code> has found a sweet spot in
+specifying business rules you need to realize that it wont tolerate other gods
+beside it. Constraints and higher level rules specified in your Ruby code will
+only be maintained if you access the data through Ruby code. 
+
+The solution to this is obvious: Don't share your database, share your access
+layer. Every access to the database has to go through your models. And those
+will be the keeper of invariants, the maintainer of .. you get my drift. 
+
+Here's the short list of options you have to go about this: 
+
+h2. Share model code
+
+This is the first idea that you will have and probably not the best. Somehow
+bad ideas always come up first. 
+
+Following this idea, you would share your model code between various projects
+(using git submodules or the like) and access the database from all projects, 
+going through the model code. 
+
+This has a number of downsides: 
+
+* Your model code will change over time. That generates deployment issues: How
+  will you update your projects all at the same time? If you don't, you are 
+  back at square one. 
+  
+* Worse: Your database will need to change. But if you do that, all your model
+  code (or the part that is not generated anyway) will possibly become invalid. 
+  So doing a migration means updating all your code _at the same time_. So you
+  stop the world and do the update...
+  
+* Another minor issue, if you are doing BDD/TDD 
+  "like me":http://localhost:4000/2009/09/02/i_am_somewhat_of_a_tester.html:
+  Where do you keep the tests for your model code? In the project that uses the
+  code, because that project depends on the features that the test demands?
+  Or in your model code project, since the code is there?
+  
+If I were you, I would not go down that road.   
+
+h2. Distribute the data
+
+
+
+h2. Provide model access as a service
+
+
+
+
+h1. Other concerns 
+
+h2. Make parts as small as possible
+
+h2. 
