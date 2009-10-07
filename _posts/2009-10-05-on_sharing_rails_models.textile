@@ -1,5 +1,5 @@
 ---
-title: On sharing Rails Models between parts of your Architecture
+title: On sharing your models and still keep the database a secret
 tags: 
   - ruby
   - rails 
@@ -9,6 +9,9 @@ tags:
   - REST
   - bdd
   - tdd
+  - thrift
+  - XML RPC
+  - SOAP
 ---
 
 Your rails application is useful to someone. Now he wants to do more, depend
@@ -60,15 +63,51 @@ If I were you, I would not go down that road.
 
 h2. Distribute the data
 
+"Enterprise Rails":http://oreilly.com/catalog/9780596515201 does mention a 
+few ways to distribute your data to the application that needs the data. 
+The idea is to create a books database (and a books model) that is then used
+by the 'book processing system' locally. _Why share when you can own it?_
 
+Because sharing is really what makes applications interesting to whomever uses
+it. And sharing things in a good way really is what application architecture
+is about.
+
+So data distribution doesn't work, since there will always be some overlap
+in data access. 
 
 h2. Provide model access as a service
 
+The remaining solution then is: Provide access to your model layer through
+small services that you publish. Access the model through them and _only_ that
+way. 
 
+When the model changes, the service can stay the same. This solves the deployment
+issues I've shown with the first solution. And because it decouples the consumer
+of the service from the data, essentially where the data is located doesn't 
+matter anymore. 
 
+Your service will provide an _interface_ for data access. This will hide 
+complexity, allow you to provide abstraction. Its just a good idea (tm). 
 
-h1. Other concerns 
+h1. And to end on a practical note
 
-h2. Make parts as small as possible
+I am getting a lot of mileage out of "thrift":http://incubator.apache.org/thrift/ 
+these days. Being able to create service points and not limit myself to 
+one particular language at the same time just has this innate beauty to 
+the language geek in me. 
 
-h2. 
+Thrift lets you create services that look like instances of objects on both
+sides. It will handle marshalling and unmarshalling for you. The internal
+architecture of thrift really convinces me. It is
+"hackable":http://github.com/kschiess/thrift_amqp_transport / more on that
+later on.
+
+I am really not convinced of REST/SOAP/XML RPC. I don't want to clutter my
+controllers with XML generating code. And even though I am using REST style
+controllers these days (as a way of structuring my application), I don't want
+those be an API at the same time. I am really afraid of ending up with the
+'Big Generic Interface To Everything (tm)' and not being able to change it 
+anymore when I need to. It ties things together that want to be free!
+
+Thrift is small and neat. I can create a service within the space of an
+hour but still am able to do so explicitly. 
