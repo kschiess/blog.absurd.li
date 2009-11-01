@@ -1,0 +1,52 @@
+---
+title: One-Way RPC using AMQP as transport and THRIFT for communication
+tags: 
+  - amqp
+  - thrift
+  - ruby
+  - queue
+  - rpc
+---
+
+In this article I would like to present '<code>thrift_amqp_transport</code>', 
+a small library I've worked on in the past months. It allows you to do 
+one way rpc (method calls) using AMQP as a transport layer. This will decouple
+the sender from the receiver completely. I will present some usage examples 
+in the second part of this article. 
+
+What is AMQP? Igvita.com has recently featured a nice overview article about
+AMQP and Ruby. AMQP is a protocol for asynchronous messaging/ queuing over the
+network.
+
+Thrift is an RPC framework developed by Facebook (formerly) that got made an 
+Apache project. It allows you to do cross language/ cross platform method calls. 
+I am impressed by the clean design that went into this. The intermediary 
+definition language that is used is surprisingly rich, allows you to aggregate
+data into types and to transmit hashes and lists. 
+
+h2. A very basic example of AMQP usage
+
+ls
+
+h2. RPC instead of strings
+
+h2. Some possible past&future uses of this
+
+
+* Round-robin load balancing (sending ACK delayed) (ext)
+
+* Job queuing (Persistence, Easy concurrency)
+
+* Service discovery (one to many broadcast)
+
+h1. Status & Limitations
+
+Working for first use cases, production use
+
+Ongoing project, It's just me, you know. Suggestions and comments are welcome
+
+Create a fork, create a test, write some code and send me a pull request.
+
+No bidirectional communication yet. Thinking hard of how to add it.
+
+

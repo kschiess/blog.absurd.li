@@ -47,6 +47,10 @@ days (and not minutes, like the above). Roughly sketched:
   _X_.
 # Starting to write it, you identify that it interacts with _Y_ and _Z_.
 
+The interface of class _X_ will be clean, because you start by looking at
+it from a users perspective. What is the most convenient way to get an instance
+of the class? Who will create it? What does the class do? 
+
 h2. Starting with rough ideas
 
 
