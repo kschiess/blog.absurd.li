@@ -1,0 +1,5 @@
+
+Introduction
+
+What is thrift, amqp? -> igvita.com
+
