@@ -4,7 +4,6 @@ tags:
   - haskell
   - programming languages
   - books
-  - rant
 ---
 
 I am reading the book "Real World Haskell"[1] – and enjoying it to my

@@ -12,6 +12,7 @@ tags:
   - thrift
   - XML RPC
   - SOAP
+  - rpc
 ---
 
 Your rails application is useful to someone. Now he wants to do more, depend

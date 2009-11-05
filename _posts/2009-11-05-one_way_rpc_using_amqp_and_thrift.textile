@@ -75,7 +75,7 @@ h2. RPC instead of strings
 
 To avoid writing a complex dispatch mechanism, it would probably be wise to
 use some kind of RPC implementation to reduce complexity at this point. Using
-'<code>thrift_amqp_transport</code>, the above code would look like this:
+'<code>thrift_amqp_transport</code>', the above code would look like this:
 
 <pre class="sh_ruby"><code>
   require 'thrift_amqp_transport'
@@ -129,7 +129,7 @@ which would look like this in our case:
 h2. Some possible past&future uses of this
 
 I am using this for queuing up work and acting on it like you can see in the
-above example. This is probably more complex (setup-wise) than other solutions, but allows me to restart workers at any time, since the work is 
+example above. This is probably more complex (setup-wise) than other solutions, but allows me to restart workers at any time, since the work is 
 stored on the queue in a persistent manner. 
 
 But of course, with the power of thrift and AMQP under the 
