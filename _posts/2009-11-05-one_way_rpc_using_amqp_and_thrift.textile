@@ -8,7 +8,7 @@ tags:
   - rpc
 ---
 
-In this article I would like to present '<code>thrift_amqp_transport</code>', 
+In this article I would like to present '"thrift_amqp_transport":http://github.com/kschiess/thrift_amqp_transport', 
 a small library I've worked on in the past months. It allows you to do 
 one way rpc (method calls) using AMQP as a transport layer. This will decouple
 the sender from the receiver completely. I will present some usage examples 
@@ -157,5 +157,4 @@ h1. Status & Limitations
 The library is under active development and will be extended in the future. 
 Some of the above uses are not yet possible, patches are welcome. 
 
-
-
+You can get the source code "here":http://github.com/kschiess/thrift_amqp_transport.
