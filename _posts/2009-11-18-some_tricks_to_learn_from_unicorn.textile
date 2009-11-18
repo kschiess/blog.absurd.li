@@ -1,0 +1,109 @@
+---
+title: Some tricks that can be learnt from the unicorn
+tags: 
+  - reading code
+  - tricks
+  - unix
+  - ruby
+  - unicorn
+  - bearded unix gurus
+---
+
+My general disgust with threaded/evented programming has led me to read up on
+the good old unix techniques used in "unicorn":http://unicorn.bogomips.org/.
+What a good read it was. The mix of programmers that have constructed unicorns
+have very different styles. That makes reading fun. I guess anyone could
+distinguish Zed Shaw's style from the rest of the pack... 
+
+But there are also some unix techniques that I've learnt from unicorn and that
+I will share with you now[1]. 
+
+h2. The Self Pipe Trick
+
+This trick allows you to handle signals safely in your code. A nice side-effect
+is that it will also allow you to trigger running of a process without using 
+signalling. 
+
+Assume you have two processes, A and B. One process wants 
+to be able to signal the other, awaking it from sleep. Lets assume that
+they share a FD to a pipe, where <code>read_end</code> is the end of the pipe 
+that is open for reading and <code>write_end</code> the one open for writing to.
+
+<pre class="sh_ruby"><code>
+  # Process A: Sleep and wait for a signal: 
+  IO.select([read_end])
+</code></pre>
+
+The above code snippet is used to put the process A to sleep, waiting for a
+signal[1]. You would then use the following technique to wake the process up: 
+
+<pre class="sh_ruby"><code>
+  # Process B: Awake process A
+  write_end.write_nonblock('.')   # the '.' is arbitrary
+</code></pre>
+
+Process A wakes up because you've just written something to the FD that its 
+waiting on[3]. 
+
+Note that this technique can also be used to wake process A up from a signal
+handler. So you get safe IPC in just a few lines. 
+
+This trick seems to be "well":http://osiris.978.org/~alex/safesignalhandling.html
+known in the unix world, there are even some alternatives (read that link).
+
+h2. Keepalive through an unlinked file
+
+Another thing that I found most enlightening is how unicorn handles sending
+heartbeats to the controlling process from its workers. This is not as easy 
+as it looks, since actively sending heartbeats will require the master to 
+listen at the same moment. The solution unicorn uses decouples the master
+from the client in that respect. 
+
+The master opens one temporary file per worker and _unlinks it right away_[4].
+The open file handle to that file is then shared with all the worker processes.
+
+Each worker will then do the following to prove its alive and kicking:
+
+<pre class="sh_ruby"><code>
+  tmpfile.chmod(m = 0 == m ? 1 : 0)
+</code></pre>
+
+The chmod will use either '1' or '0' each time this gets executed.[5] (Assign '0'
+to the local variable 'm', compare it to '0'. If it matches (<code>m ==
+0</code>), <code>m = 1</code>, otherwise <code>m = 0</code>. A one line
+toggle.) 
+
+Here's what the master does to check the worker's status[6]: 
+
+<pre class="sh_ruby"><code>
+  stat = worker.tmpfile.stat
+  unless (diff = (Time.now - stat.ctime)) <= timeout
+    # Worker has gone stale and needs to be respawned
+  end
+</code></pre>
+
+Even though the file is unlinked it still has metadata associated with it. 
+Using the file's <code>#ctime</code> we can check when the file was last mode changed, and
+thus when the worker was last alive.
+
+This nice gem of a technique uses the unix file system as an external data
+store. I really like the details that went into this, like the fact that its
+unlinked already or the small code hack that is explained in the parentheses
+above. I haven't been able to find that technique elsewhere, though I am sure
+it is part of any bearded unix guru's toolbox.  
+
+
+[1] All references to unicorn code are made against revision
+6311cc30b96b08f72fe00a9a0d1e291cf9923e52 of the repository @
+git://git.bogomips.org/unicorn.git.
+
+[2] <code>unicorn.rb</code>, method <code>#master_sleep</code>, lines 422-429
+
+[3] <code>unicorn.rb</code>, method <code>#awaken_master</code>, lines 431-438
+
+[4] <code>util.rb</code>, <code>Util.tmpio</code>, lines 75-86
+
+[5] <code>unicorn.rb</code>, method <code>#worker_loop</code>, lines 631-639,
+be sure to read the interesting comment right above.
+
+[6] <code>unicorn.rb</code>, <code>#murder_lazy_workers</code>, lines 517-527
