@@ -4,6 +4,8 @@ tags:
   - OpenID
   - Cooking
   - reading code
+  - rails
+  - ruby
 ---
 
 I am going to explain OpenID in just the time it takes to cook a chicken soup.
@@ -26,7 +28,7 @@ h2. How does it work?
 Keep in mind that we're running against the clock here and bear with me while
 I insult your user with the following diagram: 
 
-!/img/2009-11-29/openid_sequence.png!
+!/img/2009-11-29/openid_sequence.png!:http://dd.dynamicdiagrams.com/2009/03/visualization-a-la-dilbert/
 
 Authenticating your user in 4 easy steps: 
 
@@ -87,8 +89,8 @@ provider and comes back to <code>return_to</code> – meaning our
 
 <pre class="sh_ruby"><code>
   def complete
-    this_url = url_for :action => 'complete', :only_path => false
-    this_urls_params = request.query_parameters
+    this_url          = url_for :action => 'complete', :only_path => false
+    this_urls_params  = request.query_parameters
     
     # Verify the OpenID security answer with what we think it should be (step 4)
     openid_response = openid.complete(this_urls_params, this_url)
@@ -129,4 +131,4 @@ h2. In parting
 a few last words: I hope to have simplified OpenID and the use of
 'ruby-openid'. I would be interested to hear your comments and thoughts -
 leave them below. Also. And most importantly. If you have any really good
-recipe for chicken soup, I'd be most happy to borrow it from you.
+*recipe for chicken soup*, I'd be most happy to borrow it from you.
