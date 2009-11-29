@@ -1,0 +1,132 @@
+---
+title: OpenID explained (while cooking chicken soup)
+tags: 
+  - OpenID
+  - Cooking
+  - reading code
+---
+
+I am going to explain OpenID in just the time it takes to cook a chicken soup.
+Those two hours will allow me to write just the really simple explanation I
+have been looking for on the internets recently. My throwing in some Ruby code
+and some diagrams will allow you to hopefully create an OpenID consumer with
+some trust in what you are doing and in less time than it took me.
+
+h2. OpenID? What is that?
+
+OpenID will allow you to use multiple sites with just one login. Follow this
+"link":http://openid.net/ to get to know more on the topic. I am going to
+assume you 
+  
+  # know what OpenID is (from a users perspective) and 
+  # you already have one.
+
+h2. How does it work?
+
+Keep in mind that we're running against the clock here and bear with me while
+I insult your user with the following diagram: 
+
+!/img/2009-11-29/openid_sequence.png!
+
+Authenticating your user in 4 easy steps: 
+
+1. Your user gives you an OpenID, claiming it's his.
+
+2. You perform discovery on the OpenID. You find out that in reality, 'the OpenID provider' will answer questions about 'the users OpenID'.
+
+3. So you redirect your user to his OpenID provider. You pass along data that
+will help ask the question: "Is this guy who he says he is?"
+
+4. You don't care about how your user identifies to his service. All you care
+about is that you get your user redirected back to you and that this special 
+redirect carries data proving the users association with the OpenID he gave.
+
+h1. And in Practice
+
+You should install "ruby-openid":http://openidenabled.com/ruby-openid/ (<code>gem install ruby-openid</code>). Imaging that you have a form that
+POSTs the users OpenID as '<code>:openid</code>'. Steps 2 & 3 above would 
+look like this: 
+
+<pre class="sh_ruby"><code>
+  def start
+    # Did the user fill in the field? (maybe step 1 failed)
+    render 'form' and return unless params[:openid].blank?
+  
+    # Perform discovery (step 2)
+    openid_request = openid.begin(params[:openid])
+    
+    return_to = url_for :action => :complete, :only_path => false
+    realm     = root_url
+
+    # Send the user to his provider (step 3)
+    redirect_to openid_request.redirect_url(realm, return_to)
+    
+  rescue OpenID::OpenIDError
+    # Step 2 (Discovery) failed
+    render 'form'
+  end
+</code></pre>
+ 
+Please keep in mind that this is a really stripped down no-nonsense version
+of the code that only serves to illustrate the concept simply. I'll point
+you to correct (and more complex) code later. 
+
+As you can see we redirect the user to an URL that comes straight out of the 
+discovery process. We pass along a realm and a <code>return_to</code>-url, so
+that when the user has finished talking to his provider, he will come back and
+call our <code>#complete</code> action.
+
+I am obviously skipping over a lot of detail, including but not limiting
+myself to where you get the <code>'openid'</code> instance from. Now there's
+something uninteresting I don't want to talk about! As I said, all the useful
+stuff will be in the end- and footnotes, as usual. 
+
+Back to our main narrative: The user finishes authenticating with his OpenID
+provider and comes back to <code>return_to</code> – meaning our
+<code>#complete</code> action:
+
+<pre class="sh_ruby"><code>
+  def complete
+    this_url = url_for :action => 'complete', :only_path => false
+    this_urls_params = request.query_parameters
+    
+    # Verify the OpenID security answer with what we think it should be (step 4)
+    openid_response = openid.complete(this_urls_params, this_url)
+    
+    if openid_response.status == OpenID::Consumer::SUCCESS
+      # All right: The guy is who he says he is.
+    else
+      # Nope.
+    end
+  end
+</code></pre>
+
+We pass the <code>#complete</code> method the url we're supposed to be at and
+the query parameters the way Rails sees them before mixing in
+'<code>:action</code>' and '<code>:controller</code>'. This will call back to
+the OpenID provider once more to check if everything is as it should be.
+
+Once verification of query parameters, of cryptographic hashes and subliminal
+messages succeeds - we can let the user in. Note that verifying an OpenID is
+like verifying an email address. We don't know anything about the users
+identity yet, only about his association to the OpenID. As is the case with
+email it turns out that this is often enough. 
+
+h2. More information
+
+can be found in the sample Rails application provided in the
+<code>examples</code> subdirectory of the <code>ruby-openid</code> gem. Some
+of that code really is more complex than it needs to be – keep in mind that
+it just handles a lot of cases in the same bit of code. Most applications 
+wont need to copy that complexity. 
+
+The code of <code>ruby-openid</code> is also well annotated. It reads a bit
+like the Python it is ported from, but apart from that is really ok. Go have a 
+look!
+
+h2. In parting
+
+a few last words: I hope to have simplified OpenID and the use of
+'ruby-openid'. I would be interested to hear your comments and thoughts -
+leave them below. Also. And most importantly. If you have any really good
+recipe for chicken soup, I'd be most happy to borrow it from you.
