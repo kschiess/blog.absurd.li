@@ -1,0 +1,19 @@
+---
+title: A redesign of Thrift/AMQP
+tags: 
+  - thrift
+  - amqp
+  - ruby
+  - redesign
+  - reading code
+---
+
+too general too complex
+
+Usage should lead to code
+IMAGES
+Considerations for a new design: Abstract away everything
+Other design: Simpler, more transparent
+Choice
+Status
+
