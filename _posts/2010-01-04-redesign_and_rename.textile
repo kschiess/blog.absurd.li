@@ -1,0 +1,49 @@
+---
+title: A redesign and a rename in 2010
+tags: 
+  - thrift
+  - AMQP
+  - ruby
+  - toamqp
+  - open source
+---
+
+For those of you following the thrift_over_amqp_transport plugin: I have just
+finished a complete rewrite. The 'plugin' is now called 'toamqp' and is
+available through rubygems: 
+
+<pre class="sh_sh"><code>
+  $ gem install toamqp
+</code></pre>
+
+The version that is currently published has some minor bugs. I will publish
+another version real soon now (0.3.1) that fixes those and then some. 
+
+h2. The redesign
+
+Starting with the new version it is now really easy to create server and client
+for a AMQP service. Really, its just a few lines: 
+
+<pre class="sh_ruby"><code>
+  # A real small server: 
+  class MyServiceImplementation < TOAMQP::Service::Base
+    serves ThriftServiceModule
+    exchange :my_service
+    
+    # Service methods go here
+  end
+  
+  TOAMQP.server(MyServiceImplementation.new).serve
+</code></pre>
+
+<pre class="sh_ruby"><code>
+  # A real small (smaller!) client
+  client = TOAMQP.client(:my_service, ThriftServiceModule)
+</code></pre>
+
+Please have a look at the README in the
+"source":http://github.com/kschiess/toamqp. I've also included a few samples
+in the '<code>examples</code>' subdirectory of the project – this should get
+you running in no time.
+
+I will publish a real HOWTO for a few sample use cases here soon.
