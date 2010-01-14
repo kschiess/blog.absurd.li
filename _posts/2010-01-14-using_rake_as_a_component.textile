@@ -1,0 +1,141 @@
+---
+title: Using rake as a component
+tags: 
+  - ruby
+  - rake
+---
+
+Rake is a useful beast. As one of the most mature ruby projects it makes my
+life better by allowing me to forget everything I ever knew about
+<code>make</code>. 
+
+h2. Embedded Rake
+
+I would like to show here how you can use rake as a library, not as a tool.
+The following piece of code shows how you can declare tasks in your own Ruby
+classes:
+
+<pre class="sh_ruby"><code>
+  require 'rake'
+  class RocketScience
+    include Rake::TaskManager
+    def task(*args, &block)
+      define_task(Rake::Task, *args, &block)
+    end
+
+    def init
+      task :build_rocket do
+        p :build_rocket # rocket building here
+      end
+
+      task :launch_rocket => :build_rocket do
+        p :launch_rocket # launching here - only works if you build it first
+      end
+      self
+    end
+  end
+  
+</code></pre>
+
+The <code>Rake::TaskManager</code> mixin retrofits task management to any of
+your classes. It defines a few methods that allow creation, invocation and
+management of your own tasks. The example uses <code>#define_task</code> to
+add tasks to the current instance of <code>RocketScience</code>. You can find
+the default definitions for <code>#task</code>, <code>#file</code> and the
+whole <code>TaskManager</code> mixin in rake.rb in rake's source code at the
+top level.
+
+Now the above example doesn't do much yet. To show that rake is really useful
+for your code, here's how to print something:
+
+<pre class="sh_ruby"><code>
+  class RocketScience   # reopen the class
+    def run
+      self[:launch_rocket].invoke
+    end
+
+    def options
+      options = OpenStruct.new
+      options.trace = false
+      options.dryrun = false
+      options
+    end
+  end
+  
+  RocketScience.new.init.run
+</code></pre>
+
+We need to provide rake with an options method that defines some of the 
+runtime options you can set in the command line tool as well. The above 
+example will print 
+
+<pre>
+  :build_rocket
+  :launch_rocket
+</pre>
+
+A whole lot, isn't it? 
+
+Now you will say that embedding rake like this is a complicated way of 
+doing the following: 
+
+<pre class="sh_ruby"><code>
+  require 'rake'
+  
+  task :build_rocket do
+    p :build_rocket # rocket building here
+  end
+
+  task :launch_rocket => :build_rocket do
+    p :launch_rocket # launching here - only works if you build it first
+  end
+  
+  Rake::Task[:launch_rocket].invoke
+</code></pre>
+
+You would be right. The only thing the first example buys you is that your 
+rake namespace is not a singleton anymore, you can actually have multiple 
+tasks with the same name in different instances of <code>RocketScience</code>.
+
+h2. Remote Rake 
+
+One last rake trick before you can go out to play: I recently discovered an
+heavily underdocumented feature in
+"vlad":http://rubyhitsquad.com/Vlad_the_Deployer.html the deployer: remote 
+rake tasks from within rake. Perhaps this is underdocumented because it is
+so stupidly obvious to everyone (but me!), but I think it is definitly worth
+the mention: 
+
+<pre class="sh_ruby"><code>
+  require 'rake'
+  require 'rake_remote_task'
+
+  role :server, 'server1'
+  role :server, 'server2'
+
+  remote_task :ls, :roles => :server do 
+    run 'ls'
+  end
+
+  Rake::Task[:ls].invoke
+</code></pre>
+
+The above example shows how you can execute '<code>ls</code>' on multiple
+remote servers. You first define your servers as being part of a role, using
+either the <code>role</code> keyword (as above) or the <code>host</code>
+keyword:
+
+<pre class="sh_ruby"><code>
+  host 'multiple-purpose-host', :db, :application
+</code></pre>
+
+Then you write remote rake tasks against these roles as shown. Note that the
+example uses the 'rake-on-a-stick' technique I've shown above and could well
+be integrated with everything said above. Of course, you could make it a
+vanilla <code>Rakefile</code> as well.
+
+Since vlad is capistrano built on rake, it should be clear that vlad contains
+this feature. But I think this is useful for all uses of rake, not just
+deployments. Using this you can write <code>Rakefile</code>s that execute on
+multiple servers AND locally at once. Serious coolness. Goodbye Capistrano,
+welcome to our new russian overlords.
