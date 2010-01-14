@@ -3,6 +3,8 @@ title: Using rake as a component
 tags: 
   - ruby
   - rake
+  - capistrano
+  - vlad
 ---
 
 Rake is a useful beast. As one of the most mature ruby projects it makes my
