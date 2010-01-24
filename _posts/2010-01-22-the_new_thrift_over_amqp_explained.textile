@@ -1,0 +1,116 @@
+---
+title: "The new Thrift / AMQP bridge: Explained"
+tags: 
+  - thrift
+  - amqp
+  - ruby
+  - toamqp
+  - rpc
+  - thrift_over_amqp
+---
+
+IDEA: Include rake task and threaded client into toamqp
+
+I have reworked the <code>thrift_over_amqp</code> plugin into a real gem that
+can be used everywhere. To do this, I've rewritten the code and cleaned up the
+javaish API mess. Must've been the contact stress with thrift APIs. But this
+is "old news":/2010/01/04/redesign_and_rename.html already.
+
+Let me try to give you some new .. well ah .. news. Here's a graphic list of 
+operation modes for thrift calls when sent via an AMQP broker: 
+
+IMAGE: 
+Client to one
+Client to one out of many
+Client to many
+
+Thrift itself provides you just with the same old point to point procedure
+call (A). Where do the other combinations come from?, you ask. Those are 
+pretty much what AMQP does for you. Using toamqp, you can take advantage of
+these other operation modes for RPC calls as well. 
+
+To say it with the words of the king – A little less conversation, a little
+more action please: 
+
+h2. One to One example
+
+About the simplest thing you can do with <code>toamqp</code> is to connect
+two points of your infrastructure via RPC. To do this, you need to write a 
+thrift specification of the receiver: 
+
+<pre><code class="sh_thrift">
+  service receiver {
+    /**
+     * Let's say we have a search server somewhere, answering with a list
+     * of search results to us:
+     */
+     list<string> search(1: string word)
+  }
+</code></pre>
+
+This is better than the usual <code>getTime</code> RPC call, since we '_now
+what time it is_', right? As you can see, thrift has a rich set of types that
+can be sent over the wire. You can create new types yourself and even do 
+exception handling. 
+
+You may be wondering what the '<code>1: </code>' is about in the list of 
+arguments of our function. That is thrift's micro-level versioning. You give
+all your parameters a unique id and have to make sure you only use that id
+when you're talking about the exact same thing. I can rename word, as long as
+I use the same id; I can also introduce new parameters unilaterally and be 
+assured that only receivers who have use for them will receive them. 
+
+h3. Turning the specification in some code
+
+You can now use thrift to generate Ruby code from that. This generally looks
+like this: 
+
+<pre><code class="sh_bash">
+  > thrift --gen rb receiver.thrift
+</code></pre>
+
+This only works if you install the whole thrift suite, not just the rubygem. 
+Doing so will give you the compiler for the thrift IDL. I may someday include
+a new rake task generator into toamqp for making this step real easy. For now
+you are stuck with the command line. 
+
+You most likely get a '<code>gen-rb</code>' subdirectory that contains three
+ruby files. We're now just one step away from writing our sender/receiver
+pair. For the request sender (aka client), we write: 
+
+<pre><code class="sh_ruby">
+  require 'toamqp'    # requires thrift and bunny
+  require 'gen-rb/receiver.rb'
+
+  sender = TOAMQP.client('receiver', Receiver)
+</code></pre>
+
+The first argument to <code>.client</code> is the name of the exchange that 
+you want to use for all messages. Sender and receiver must use the same name
+here. Think of it as the _address_ of the receiver. 
+
+The second argument is the module that contains all thrift generated classes.
+TOAMQP will dynamically look up the '<code>client</code>' class from that 
+module and return you an instance of that client, connected to your queue
+server. Speaking of which: You can configure the connection attributes using
+the longish method <code>#connection_attributes=</code> on the connection 
+manager: 
+
+<pre><code class="sh_ruby">
+  TOAMQP.connection_manager.connection_attributes = {
+    :user => 'username', 
+    :password => 'password', 
+    :host => 'myqueue.mydomain.com'
+  }
+</code></pre>
+
+The default is a connect to localhost.
+
+
+
+h2. Extending to round robin load balancing
+
+h2. Routing messages to the right server
+
+h2. Broadcasting to many servers
+
