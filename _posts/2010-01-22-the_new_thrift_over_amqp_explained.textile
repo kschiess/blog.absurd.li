@@ -247,13 +247,13 @@ h2. Broadcasting to many receivers
 
 You can also send out a message to many receivers. The only limitation here
 is that you cannot get results from more that one receiver, since thrift
-doesn't provide that. But it provides you with the <code>async</code> keyword
+doesn't provide that. But it provides you with the <code>oneway</code> keyword
 that allows you to send out messages without listening for the answer, exactly
 what we need for this broadcast-enabled service: 
 
 <pre class="sh_thrift"><code>
   service Broadcast {
-    async void hi(1: string ipAddress)
+    oneway void hi(1: string ipAddress)
   }
 </code></pre>
 
