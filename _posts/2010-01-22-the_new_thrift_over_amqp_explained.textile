@@ -11,6 +11,7 @@ tags:
 
 IDEA: Include rake task and threaded client into toamqp
 TODO: link up thrift
+TODO: Update thrift, retest toamqp
 
 I have reworked the <code>thrift_over_amqp</code> plugin into a real gem that
 can be used everywhere. To do this, I've rewritten the code and cleaned up the
@@ -183,10 +184,98 @@ one machine:
 
 Of course, this is a brutal oversimplification of the issues involved(LINK to
 self). You might want to look at the threaded server that comes with thrift or/and at unicorn(LINK), a forking web server for more information about 
-this. Let me just say that more often than not, the simple line given 
-above that starts a simple server is really enough. 
+this. 
+
+One small warning at this point: Thrift itself is not thread safe, and neither
+is toamqp. You cannot just spawn a few Ruby threads and use the client in all
+of them; you might have to create one client object per thread. And you should
+really look at the servers that come with thrift, they solve many of the
+issues with threading you might have. 
+
+So road-robin balancing and load distribution over several machines is done, 
+what is next? 
 
 h2. Routing messages to the right server
 
-h2. Broadcasting to many servers
+Sometimes you don't just have many servers of the _same kind_, but many
+servers with the same interface of _different kind_. toamqp supports this
+directly.
 
+Let's say you have two places to search for, your desk and your wastebasket. (Since we all know that important documents are stored there, right?) So ideally, you would want to search them both: 
+
+<pre class="sh_ruby"><code>
+  desk = TOAMQP.client('receiver', Receiver, { :location => :desk })
+  wastebasket = TOAMQP.client('receiver', Receiver, { :location => :wastebasket })
+  
+  [desk, wastebasket].map { |sender| sender.search('important document') }
+</code></pre>
+
+This will fail brutally after experimenting with the code above. The reason is
+that for this to work, you will need to redeclare the 'receiver' exchange on
+your broker to be of a different type. Before, it was _direct_ (as in send my
+messages _directly_ to the receiver), now it should be _headers_ (as in:
+_filter by the headers_ I send). Luckily toamqp does this for you, provided
+you clear the old variant from your servers first. You can either do this by
+restarting your server or by manually issuing a delete call via 'bunny'.
+
+For really easy experimentation you should just change the exchange name to 
+'receiver_filtered'. This way toamqp will declare a new exchange and your 
+AMQP broker will not throw an error. 
+
+I'll just show you how to implement a wastebasket receiver; the desk receiver
+should follow from that. Note that since they implement the _same_ interface 
+but have _different implementations, you will really need two different classes: 
+
+<pre class="sh_ruby"><code>
+  class Wastebasket < TOAMQP::Service::Base
+    exchange 'receiver', match => { :location => :wastebasket }
+    serves Receiver
+    
+    def search(query)
+      # ...
+    end
+  end
+</code></pre>
+
+h3. Combining the layouts
+
+These two layouts (Round-Robin Load Balancing and Header Routing) can of
+course be combined. Together these two will help with most if not all
+communication needs you might have. 
+
+h2. Broadcasting to many receivers
+
+You can also send out a message to many receivers. The only limitation here
+is that you cannot get results from more that one receiver, since thrift
+doesn't provide that. But it provides you with the <code>async</code> keyword
+that allows you to send out messages without listening for the answer, exactly
+what we need for this broadcast-enabled service: 
+
+<pre class="sh_thrift"><code>
+  service Broadcast {
+    async void hi(1: string ipAddress)
+  }
+</code></pre>
+
+And here's a handler class to match this service: 
+
+<pre class="sh_ruby"><code>
+  class Registry < TOAMQP::Service::Base
+    exchange 'broadcast', :broadcast => true
+    serves Broadcast
+    
+    def announceService(type, exchange)
+      # remember the service that announces itself
+    end
+  end
+</code></pre>
+
+By now, you should know how the client for this is created, so I wont repeat
+that here. Perhaps you've noted the inversion of the roles that governs this
+example: a service provider would announce its presence to all interested 
+service consumers using the above thrift interface. So here the server really
+is the client. 
+
+To clear this up, lets pseudocode a 
+
+h2. Possible extensions, Status, Roadmap
