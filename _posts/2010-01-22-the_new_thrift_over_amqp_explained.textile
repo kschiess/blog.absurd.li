@@ -10,7 +10,7 @@ tags:
 ---
 
 IDEA: Include rake task and threaded client into toamqp
-TODO: link up thrift
+TODO: link up thrift http://incubator.apache.org/thrift/
 TODO: Update thrift, retest toamqp
 
 I have reworked the <code>thrift_over_amqp</code> plugin into a real gem that
@@ -40,7 +40,7 @@ About the simplest thing you can do with <code>toamqp</code> is to connect
 two points of your infrastructure via RPC. To do this, you need to write a 
 thrift specification of the receiver: 
 
-<pre><code class="sh_thrift">
+<pre class="sh_thrift"><code>
   service receiver {
     /**
      * Let's say we have a search server somewhere, answering with a list
@@ -67,7 +67,7 @@ h3. Turning the specification in some code
 You can now use thrift to generate Ruby code from that. This generally looks
 like this: 
 
-<pre><code class="sh_bash">
+<pre class="sh_bash"><code>
   > thrift --gen rb receiver.thrift
 </code></pre>
 
@@ -80,7 +80,7 @@ You most likely get a '<code>gen-rb</code>' subdirectory that contains three
 ruby files. We're now just one step away from writing our sender/receiver
 pair. For the request sender (aka client), we write: 
 
-<pre><code class="sh_ruby">
+<pre class="sh_ruby"><code>
   require 'toamqp'    # requires thrift and bunny
   require 'gen-rb/receiver.rb'
 
@@ -98,7 +98,7 @@ server. Speaking of which: You can configure the connection attributes using
 the longish method <code>#connection_attributes=</code> on the connection 
 manager: 
 
-<pre><code class="sh_ruby">
+<pre class="sh_ruby"><code>
   TOAMQP.connection_manager.connection_attributes = {
     :user => 'username', 
     :password => 'password', 
@@ -264,7 +264,7 @@ And here's a handler class to match this service:
     exchange 'broadcast', :broadcast => true
     serves Broadcast
     
-    def announceService(type, exchange)
+    def hi(ip_address)
       # remember the service that announces itself
     end
   end
