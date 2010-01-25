@@ -7,6 +7,9 @@ tags:
   - toamqp
   - rpc
   - thrift_over_amqp
+  - round robin
+  - load balancing
+  - filter
 ---
 
 I have reworked the <code>thrift_over_amqp</code> plugin into a real gem that
@@ -260,12 +263,13 @@ Of course, many things are left to be done. Here's my current wishlist:
 
 * Wrap the client proxy object in a thread safe way. This could lead to a 
   generic thread-safe-o-matic for client proxies. 
-  
+
 * Do some real testing with multithreaded server. Find the issues and the
   solutions. 
-  
+
 * Broadcasting to many receivers? Easy to do and would enhance the API 
   for announcing presence, sending heartbeats, etc...
+
 
 Please get in contact if any questions remain (almost impossible, if you read
 my drivel until here, you must be the expert by now). I welcome all
