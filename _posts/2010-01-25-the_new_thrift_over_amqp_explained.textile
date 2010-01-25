@@ -9,10 +9,6 @@ tags:
   - thrift_over_amqp
 ---
 
-IDEA: Include rake task and threaded client into toamqp
-TODO: link up thrift http://incubator.apache.org/thrift/
-TODO: Update thrift, retest toamqp
-
 I have reworked the <code>thrift_over_amqp</code> plugin into a real gem that
 can be used everywhere. To do this, I've rewritten the code and cleaned up the
 javaish API mess. Must've been the contact stress with thrift APIs. But this
@@ -26,10 +22,11 @@ Client to one
 Client to one out of many
 Client to many
 
-Thrift itself provides you just with the same old point to point procedure
-call (A). Where do the other combinations come from?, you ask. Those are 
-pretty much what AMQP does for you. Using toamqp, you can take advantage of
-these other operation modes for RPC calls as well. 
+"Thrift":http://incubator.apache.org/thrift/ itself provides you just with the
+same old point to point procedure call (A). Where do the other combinations
+come from?, you ask. Those are pretty much what AMQP does for you. Using
+toamqp, you can take advantage of these other operation modes for RPC calls as
+well.
 
 To say it with the words of the king – A little less conversation, a little
 more action please: 
@@ -243,39 +240,34 @@ These two layouts (Round-Robin Load Balancing and Header Routing) can of
 course be combined. Together these two will help with most if not all
 communication needs you might have. 
 
-h2. Broadcasting to many receivers
-
-You can also send out a message to many receivers. The only limitation here
-is that you cannot get results from more that one receiver, since thrift
-doesn't provide that. But it provides you with the <code>oneway</code> keyword
-that allows you to send out messages without listening for the answer, exactly
-what we need for this broadcast-enabled service: 
-
-<pre class="sh_thrift"><code>
-  service Broadcast {
-    oneway void hi(1: string ipAddress)
-  }
-</code></pre>
-
-And here's a handler class to match this service: 
-
-<pre class="sh_ruby"><code>
-  class Registry < TOAMQP::Service::Base
-    exchange 'broadcast', :broadcast => true
-    serves Broadcast
-    
-    def hi(ip_address)
-      # remember the service that announces itself
-    end
-  end
-</code></pre>
-
-By now, you should know how the client for this is created, so I wont repeat
-that here. Perhaps you've noted the inversion of the roles that governs this
-example: a service provider would announce its presence to all interested 
-service consumers using the above thrift interface. So here the server really
-is the client. 
-
-To clear this up, lets pseudocode a 
-
 h2. Possible extensions, Status, Roadmap
+
+The current released version of the library is 0.3.0. You should not be using
+that, however. If you really want to help me, please check out the repository
+from "my github account":http://github.com/kschiess/toamqp and use the 
+"0.3.1-rc-*":http://github.com/kschiess/toamqp/tree/0.3.1-rc-a branch. This 
+will give you the latest fixes and help me discover issues with the 0.3.1 
+release. Mind you, there should not be too many now - I am using this code
+in production and have encountered but few surprises. 
+
+In about two weeks time, I will be releasing 0.3.1. This marks the end of the big rewrite. Once that is done, I would like to start working towards at 
+least partial compatibility with "txAMQP.":https://launchpad.net/txamqp
+
+Of course, many things are left to be done. Here's my current wishlist: 
+
+* A specialized rake task for building thrift files (I have something
+  semi-finished laying around) 
+
+* Wrap the client proxy object in a thread safe way. This could lead to a 
+  generic thread-safe-o-matic for client proxies. 
+  
+* Do some real testing with multithreaded server. Find the issues and the
+  solutions. 
+  
+* Broadcasting to many receivers? Easy to do and would enhance the API 
+  for announcing presence, sending heartbeats, etc...
+
+Please get in contact if any questions remain (almost impossible, if you read
+my drivel until here, you must be the expert by now). I welcome all
+contributions that are accompanied by specs. 
+
