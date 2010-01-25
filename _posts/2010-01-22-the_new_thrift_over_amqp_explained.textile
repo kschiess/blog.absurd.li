@@ -10,6 +10,7 @@ tags:
 ---
 
 IDEA: Include rake task and threaded client into toamqp
+TODO: link up thrift
 
 I have reworked the <code>thrift_over_amqp</code> plugin into a real gem that
 can be used everywhere. To do this, I've rewritten the code and cleaned up the
@@ -69,10 +70,10 @@ like this:
   > thrift --gen rb receiver.thrift
 </code></pre>
 
-This only works if you install the whole thrift suite, not just the rubygem. 
-Doing so will give you the compiler for the thrift IDL. I may someday include
-a new rake task generator into toamqp for making this step real easy. For now
-you are stuck with the command line. 
+This only works if you install the whole thrift(LINK) suite, not just the
+rubygem. Doing so will give you the compiler for the thrift IDL. I may someday
+include a new rake task generator into toamqp for making this step real easy.
+For now you are stuck with the command line.
 
 You most likely get a '<code>gen-rb</code>' subdirectory that contains three
 ruby files. We're now just one step away from writing our sender/receiver
@@ -106,9 +107,84 @@ manager:
 
 The default is a connect to localhost.
 
+h3. Server implementation 
 
+Thrift makes it easy to write a receiver for our service (a simple one at
+least):
+
+<pre class="sh_ruby"><code>
+  require 'toamqp'
+  require 'gen-rb/receiver.rb'
+  
+  class ReceiverHandler < TOAMQP::Service::Base
+    exchange 'receiver'   # same as we used above
+    serves Receiver
+    
+    def search
+      # search implementation with proper exception handling
+      return %w{a few search results}
+    end
+  end
+  
+  TOAMQP.server(ReceiverHandler.new).serve
+</code></pre>
+
+This will create thrift server instance and call its <code>#serve</code> method that will singlethreadedly (is that a word?) serve requests from the
+sender. So doing 
+
+<pre class="sh_ruby"><code>
+  sender.search('chunky bacon')
+</code></pre>
+
+will return .. no chunky bacon anymore(LINK), think about the serialization
+issues, but a ruby array of your search results. This is all thanks to thrift
+- all that toamqp does at this point is connect the thrift endpoints through
+your message queue.
+
+I have chosen to make the handler implementation lean towards ActiveRecord-style class declarations. This has some disadvantages: You really
+have to decide what you're going to serve and how the exchange is going to be
+named. But I think the readability makes up for that. 
+
+Note that there is a second argument to <code>#server</code> that allows you
+to specify which server class to instanciate. There is no reason why a
+multithreaded or an evented server implementation should not work as well,
+although I must admit that my tests are cruelly lacking in that area. Speaking
+of tests: toamqp also comes with a server called
+'<code>TOAMQP::SpecServer</code>' that can help you write integration tests
+against the whole infrastructure.
 
 h2. Extending to round robin load balancing
+
+This is all very plain thrift stuff - nothing you could not achieve with tcp 
+transports as well. Let's take advantage of your message broker (your queue) 
+a little more. One of the things that a broker does as per specification is 
+round-robin balancing of message receivers. 
+
+If we connect more than one receivers to the exact same exchange (a
+simplification of issues here, more down below), they will each get 50% of the
+load. It's really as simple as that, just run two servers. And nothing
+stops you from running 10, on different machines. Let me give you a small 
+example of a forking server that starts more than one server process on 
+one machine: 
+
+<pre class="sh_ruby"><code>
+  $pids = []
+  2.times do 
+    $pids << fork { TOAMQP.server(ReceiverHandler.new).serve }
+  end
+  
+  Signal.trap("CHLD") {
+    Process.wait; 
+    $pids.delete($?.pid)
+  }
+  
+  sleep 1 until $pids.empty?
+</code></pre>
+
+Of course, this is a brutal oversimplification of the issues involved(LINK to
+self). You might want to look at the threaded server that comes with thrift or/and at unicorn(LINK), a forking web server for more information about 
+this. Let me just say that more often than not, the simple line given 
+above that starts a simple server is really enough. 
 
 h2. Routing messages to the right server
 
