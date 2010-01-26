@@ -29,18 +29,16 @@ is "old news":/2010/01/04/redesign_and_rename.html already.
 Let me try to give you some new .. well ah .. news. Here's a graphic list of 
 operation modes for thrift calls when sent via an AMQP broker: 
 
-IMAGE: 
-Client to one
-Client to one out of many
-Client to many
+!/img/2010-01-26/toamqp_layouts.png!
 
 "Thrift":http://incubator.apache.org/thrift/ itself provides you just with the
-same old point to point procedure call (A). Where do the other combinations
-come from?, you ask. Those are pretty much what AMQP does for you. Using
-toamqp, you can take advantage of these other operation modes for RPC calls.
+same old point to point procedure call (first schema). Where do the other
+combinations come from?, you ask. Those are pretty much what AMQP does for
+you. Using toamqp, you can take advantage of these other operation modes for
+RPC calls.
 
 To say it with the words of the king – A little less conversation, a little
-more action please: (LINK)
+more action please:
 
 h2. One to One example
 
@@ -148,7 +146,8 @@ sender. So doing
   sender.search('chunky bacon')
 </code></pre>
 
-will return .. no chunky bacon anymore(LINK), think about the serialization
+will return .. no chunky bacon
+"anymore":http://ejohn.org/blog/eulogy-to-_why/, think about the serialization
 issues, but a ruby array of your search results. This is all thanks to thrift
 - all that toamqp does at this point is connect the thrift endpoints through
 your message queue.
