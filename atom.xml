@@ -11,7 +11,7 @@ layout: nil
  <id>http://blog.absurd.li/</id>
  <author>
    <name>Kaspar Schiess</name>
-   <email>kaspar@absurd.li</email>
+   <email>kaspar.schiess@absurd.li</email>
  </author>
 
  {% for post in site.posts %}
