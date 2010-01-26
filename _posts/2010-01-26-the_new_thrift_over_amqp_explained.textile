@@ -12,6 +12,15 @@ tags:
   - filter
 ---
 
+h2. Abstract
+
+Since this has grown into a really long article, Here's what its about: I talk about RPC using thrift and AMQP. This can be setup in at least two different
+ways, one gives you round-robin load balancing, the other allows you to filter
+messages. At the end I provide you with a project roadmap and an invitation 
+to contribute. 
+
+h2. thrift_over_amqp becomes toamqp?
+
 I have reworked the <code>thrift_over_amqp</code> plugin into a real gem that
 can be used everywhere. To do this, I've rewritten the code and cleaned up the
 javaish API mess. Must've been the contact stress with thrift APIs. But this
@@ -28,11 +37,10 @@ Client to many
 "Thrift":http://incubator.apache.org/thrift/ itself provides you just with the
 same old point to point procedure call (A). Where do the other combinations
 come from?, you ask. Those are pretty much what AMQP does for you. Using
-toamqp, you can take advantage of these other operation modes for RPC calls as
-well.
+toamqp, you can take advantage of these other operation modes for RPC calls.
 
 To say it with the words of the king – A little less conversation, a little
-more action please: 
+more action please: (LINK)
 
 h2. One to One example
 
@@ -55,12 +63,13 @@ what time it is_', right? As you can see, thrift has a rich set of types that
 can be sent over the wire. You can create new types yourself and even do 
 exception handling. 
 
-You may be wondering what the '<code>1: </code>' is about in the list of 
+You may be wondering what the '<code>1: </code>' is about in the list of
 arguments of our function. That is thrift's micro-level versioning. You give
 all your parameters a unique id and have to make sure you only use that id
-when you're talking about the exact same thing. I can rename word, as long as
-I use the same id; I can also introduce new parameters unilaterally and be 
-assured that only receivers who have use for them will receive them. 
+when you're talking about the exact same thing. I can rename
+'<code>word</code>', as long as I use the same id; I can also introduce new
+parameters unilaterally and be assured that only receivers who have use for
+them will receive them.
 
 h3. Turning the specification in some code
 
@@ -71,10 +80,11 @@ like this:
   > thrift --gen rb receiver.thrift
 </code></pre>
 
-This only works if you install the whole thrift(LINK) suite, not just the
-rubygem. Doing so will give you the compiler for the thrift IDL. I may someday
-include a new rake task generator into toamqp for making this step real easy.
-For now you are stuck with the command line.
+This only works if you install the whole
+"thrift":http://incubator.apache.org/thrift/ suite, not just the rubygem.
+Doing so will give you the compiler for the thrift IDL. I may someday include
+a new rake task generator into toamqp for making this step real easy. For now
+you are stuck with the command line.
 
 You most likely get a '<code>gen-rb</code>' subdirectory that contains three
 ruby files. We're now just one step away from writing our sender/receiver
@@ -92,7 +102,7 @@ you want to use for all messages. Sender and receiver must use the same name
 here. Think of it as the _address_ of the receiver. 
 
 The second argument is the module that contains all thrift generated classes.
-TOAMQP will dynamically look up the '<code>client</code>' class from that 
+TOAMQP will dynamically look up the '<code>Client</code>' class from that 
 module and return you an instance of that client, connected to your queue
 server. Speaking of which: You can configure the connection attributes using
 the longish method <code>#connection_attributes=</code> on the connection 
@@ -121,13 +131,14 @@ least):
     exchange 'receiver'   # same as we used above
     serves Receiver
     
-    def search
+    def search(query)
       # search implementation with proper exception handling
       return %w{a few search results}
     end
   end
   
-  TOAMQP.server(ReceiverHandler.new).serve
+  TOAMQP.server(ReceiverHandler.new).   # create the server
+    serve                               # enter its main loop
 </code></pre>
 
 This will create thrift server instance and call its <code>#serve</code> method that will singlethreadedly (is that a word?) serve requests from the
@@ -142,31 +153,35 @@ issues, but a ruby array of your search results. This is all thanks to thrift
 - all that toamqp does at this point is connect the thrift endpoints through
 your message queue.
 
-I have chosen to make the handler implementation lean towards ActiveRecord-style class declarations. This has some disadvantages: You really
+I have chosen to make the handler implementation lean towards
+ActiveRecord-style class declarations. This has some disadvantages: You really
 have to decide what you're going to serve and how the exchange is going to be
-named. But I think the readability makes up for that. 
+named, for all instances of the class. On the plus side, you are free to
+meddle with your own constructor – and you don't have to call
+<code>super</code>, something I always seem to forget.
 
 Note that there is a second argument to <code>#server</code> that allows you
-to specify which server class to instanciate. There is no reason why a
-multithreaded or an evented server implementation should not work as well,
-although I must admit that my tests are cruelly lacking in that area. Speaking
-of tests: toamqp also comes with a server called
-'<code>TOAMQP::SpecServer</code>' that can help you write integration tests
-against the whole infrastructure.
+to specify which server class to instantiate. You can plug one of the evented
+or threaded servers that come with thrift in there, although I must admit that
+my tests are cruelly lacking in that area. Speaking of tests: toamqp also
+comes with a server called '<code>TOAMQP::SpecServer</code>' that can help you
+write integration tests against the whole infrastructure. You should really
+read the specs in the '<code>spec/integration</code>' subdirectory of toamqp
+to get an example of usage for that.
 
 h2. Extending to round robin load balancing
 
-This is all very plain thrift stuff - nothing you could not achieve with tcp 
-transports as well. Let's take advantage of your message broker (your queue) 
-a little more. One of the things that a broker does as per specification is 
-round-robin balancing of message receivers. 
+This is all very plain thrift stuff - nothing you could not also achieve with
+tcp transports. Let's take advantage of your message broker (your queue) a
+little more. One of the things that a broker does as per specification is
+round-robin balancing of message receivers.
 
-If we connect more than one receivers to the exact same exchange (a
-simplification of issues here, more down below), they will each get 50% of the
-load. It's really as simple as that, just run two servers. And nothing
-stops you from running 10, on different machines. Let me give you a small 
-example of a forking server that starts more than one server process on 
-one machine: 
+If we connect more than one receiver to the exact same exchange (a
+simplification of issues here, more down below), they will each get 50% (in
+the discret sense of the term, not the quantum mechanic sense) of the load.
+It's really as simple as that, just run two servers. And nothing stops you
+from running 10, on different machines. Let me give you a small example of a
+forking server that starts more than one server process on one machine:
 
 <pre class="sh_ruby"><code>
   $pids = []
@@ -182,8 +197,7 @@ one machine:
   sleep 1 until $pids.empty?
 </code></pre>
 
-Of course, this is a brutal oversimplification of the issues involved(LINK to
-self). You might want to look at the threaded server that comes with thrift or/and at unicorn(LINK), a forking web server for more information about 
+Of course, this is a brutal oversimplification of the issues "involved":/2009/11/18/some_tricks_to_learn_from_unicorn.html. You might want to look at the threaded server that comes with thrift or/and at unicorn, a forking web server for more information about 
 this. 
 
 One small warning at this point: Thrift itself is not thread safe, and neither
@@ -204,7 +218,7 @@ directly.
 Let's say you have two places to search for, your desk and your wastebasket. (Since we all know that important documents are stored there, right?) So ideally, you would want to search them both: 
 
 <pre class="sh_ruby"><code>
-  desk = TOAMQP.client('receiver', Receiver, { :location => :desk })
+  desk        = TOAMQP.client('receiver', Receiver, { :location => :desk })
   wastebasket = TOAMQP.client('receiver', Receiver, { :location => :wastebasket })
   
   [desk, wastebasket].map { |sender| sender.search('important document') }
@@ -212,9 +226,9 @@ Let's say you have two places to search for, your desk and your wastebasket. (Si
 
 This will fail brutally after experimenting with the code above. The reason is
 that for this to work, you will need to redeclare the 'receiver' exchange on
-your broker to be of a different type. Before, it was _direct_ (as in send my
-messages _directly_ to the receiver), now it should be _headers_ (as in:
-_filter by the headers_ I send). Luckily toamqp does this for you, provided
+your broker to be of a different type. Before, it was _direct_ (as in 'send my
+messages _directly_ to the receiver'), now it should be _headers_ (as in
+'_filter by the headers_ I send'). Luckily toamqp does this for you, provided
 you clear the old variant from your servers first. You can either do this by
 restarting your server or by manually issuing a delete call via 'bunny'.
 
@@ -224,7 +238,7 @@ AMQP broker will not throw an error.
 
 I'll just show you how to implement a wastebasket receiver; the desk receiver
 should follow from that. Note that since they implement the _same_ interface 
-but have _different implementations, you will really need two different classes: 
+but have _different_ implementations, you will really need two different classes: 
 
 <pre class="sh_ruby"><code>
   class Wastebasket < TOAMQP::Service::Base
@@ -254,7 +268,7 @@ release. Mind you, there should not be too many now - I am using this code
 in production and have encountered but few surprises. 
 
 In about two weeks time, I will be releasing 0.3.1. This marks the end of the big rewrite. Once that is done, I would like to start working towards at 
-least partial compatibility with "txAMQP.":https://launchpad.net/txamqp
+least partial compatibility with "txAMQP":https://launchpad.net/txamqp for 0.3.2.
 
 Of course, many things are left to be done. Here's my current wishlist: 
 
