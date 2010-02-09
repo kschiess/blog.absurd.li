@@ -42,3 +42,8 @@ down this server thread:
 </code></pre>
 
 This will wait for the thread to close down. 
+
+h2. Conclusion
+
+Do go off and have fun with this release. And by all means, tell me what
+doesn't work. 
