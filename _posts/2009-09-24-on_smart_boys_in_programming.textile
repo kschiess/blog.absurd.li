@@ -45,7 +45,7 @@ simplest thing that can possibly work'. This one sentence has saved me years
 of mental effort that would ultimately have been invisible to the customer.
 
 The real work is to write working software. Over-engineering and building 
-"a second system":http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FSecond-system_effect 
+"a second system":http://en.wikipedia.org/wiki/Second-system_effect 
 is just (busy-work) work evasion. But the duct tape approach is evading work
 as well, by being lazy in the sort of way clever people are.
 
@@ -55,7 +55,7 @@ with your article?
 [1] 'Hate his guts' is just more colorful than 'take issues with' – No, I 
 wouldn't hate anyones guts. That is very rare. 
 
-[2] I guess that is just a "typo":http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FInheritance_%28computer_science%29.
+[2] I guess that is just a "typo":http://en.wikipedia.org/wiki/Inheritance_(computer_science).
 
 [3] About one third of IT projects get cancelled before completing. The other
 two thirds sometimes overrun their budget by as much as twice the original
