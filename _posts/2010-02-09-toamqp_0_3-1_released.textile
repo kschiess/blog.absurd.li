@@ -1,0 +1,44 @@
+---
+title: toamqp 0.3.1 released
+tags: 
+  - thrift
+  - RPC
+  - AMQP
+---
+
+Just a quick note to let you know that I am releasing
+"toamqp":http://github.com/kschiess/toamqp today. I've already presented
+all the "novelties":/2010/01/26/the_new_thrift_over_amqp_explained.html in 
+this place, now its time to get the code some action. 
+
+This release includes many bugfixes and code cleanups. It also features
+a <code>TOAMQP::SpecServer</code> helper class that allows easier testing
+of the code. With this testing becomes a breeze - you set it up like this: 
+
+<pre class="sh_ruby"><code>
+  server = TOAMQP.server(MyHandler.new, TOAMQP::SpecServer)
+</code></pre>
+
+Then you get two options; either you make all the calls and then call
+
+<pre class="sh_ruby"><code>
+  server.serve
+</code></pre>
+
+This will act on all the messages that wait at the broker and then return. 
+When you want to satisfy your mock's expectations, this is the method to use. 
+
+You can also use
+
+<pre class="sh_ruby"><code>
+  server.serve_in_thread
+</code></pre>
+
+and then go off and make a bunch of client calls. Just don't forget to tear 
+down this server thread: 
+
+<pre class="sh_ruby"><code>
+  server.stop_and_join
+</code></pre>
+
+This will wait for the thread to close down. 
