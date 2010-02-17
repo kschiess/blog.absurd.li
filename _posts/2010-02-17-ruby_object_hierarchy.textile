@@ -1,0 +1,55 @@
+---
+title: The Ruby Object Hierarchy
+tags: 
+  - ruby
+  - internals
+  - graphviz
+  - humor
+---
+
+"Every":http://banisterfiend.wordpress.com/2008/11/25/a-complete-ruby-class-diagram/
+"self":http://eigenclass.org/hiki/class+hierarchy+introspection+evil.rb
+"respecting":http://objectgraph.rubyforge.org/
+"ruby":http://www.insula.cz/dali/material/rubycl/
+"programmer":http://www.brpreiss.com/books/opus8/html/page113.html
+has one of these on his blog. Join the 
+club. 
+
+"!/img/2010-02-17/ruby_object_hierarchy.png!":/img/2010-02-17/ruby_object_hierarchy.pdf
+
+(Click for a pdf of this. Filled triangles are _class_ relationships, empty
+triangles are _super_ relationships, funky diamonds are funky _metaclass_ relationships, thanks _why!)
+
+"Here":/samples/2010-02-17/ruby_object_hierarchy.zip is the source code for this. A few notes on the code:
+
+The code also graphs the '*actual class*' as reported
+"here":http://banisterfiend.wordpress.com/2008/10/25/the-secret-life-of-singletons/.
+I didn't see the use of that, so it's gone from the version displayed here.
+
+This is probably the most *shoddy piece* of code I've ever released. Note to
+self: Breathe out, relax. It doesn't actually hurt.
+
+If you want to run this yourself, call it like this: 
+
+<pre class="sh_bash"><code>
+  $ ruby extconf.rb && make
+  (... snippage ...)
+  $ ruby graph.rb RECURSION_DEPTH > mygraph.dot
+</code></pre>
+
+The code does depth first graph traversal over Ruby's object graph and outputs
+a "graphviz":http://www.graphviz.org/ dot file. It seems that while recursion depths bigger than
+3 are sure funky, they don't add much to the picture. 
+
+A few things that are interesting in the above graph (trying not to be
+redundant with others):
+
+* There are really a lot more metaclasses than you think. They might gather in
+  groups and descend upon you in your sleep, even. You think turtles is bad?
+  Metaclasses is way badder.
+* Class really ties the room together. Without it, Ruby would really be off
+  balance. I guess that's why its called _class oriented programming_.
+* Everything is created out of nothing. It fits with my belief system to have
+  <code>nil</code> sit on the top of that diagram. 
+
+Happy hacking!
