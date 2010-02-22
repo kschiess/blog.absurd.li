@@ -1,0 +1,147 @@
+---
+title: Notes on CoffeeScript; a javascript replacement
+tags: 
+  - javascript
+  - coffeescript
+  - ruby
+  - jquery
+---
+
+This weekend I had the chance to work/play with "CoffeeScript":http://github.com/jashkenas/coffee-script, a new language 
+created by Jeremy Ashkenas. 
+
+I had been so desperate trying to get _jquery.facelist_ by Ian Tearle do my
+evil bidding that I decided to scratch and rewrite it. After all, how
+complicated can things be, its just javascript, right? This was – in the past 
+– a recipe for disaster. I would try a rewrite and end up with something 
+as complicated as the original. And end up feeling worse about it, since this
+time it was my code. 
+
+A change of approach was in order. And since I am a fan of clever code generation, I decided to use CoffeeScript for my rewrite. Here's some notes about this experiment.
+
+h2. Source to Source compilation
+
+CoffeeScript installs with 
+
+<pre class="sh_bash"><code>
+  $ gem install coffee-script
+</code></pre>
+
+Its executable <code>coffee</code> is a source to source compiler that turns
+CoffeeScript into perfectly valid and well formed Javascript. CoffeeScript is
+written in Ruby using a treetop parser.
+
+h2. Shorter than Javascript
+
+The source code you write in CoffeeScript is considerably shorter than what
+you would write in Javascript. Languages either read like noise or they read
+like signal - and CoffeeScript is definitively signal. To me, Javascript has
+always seemed like just a tiny bit too complicated to properly remember - and
+what I wrote turned always out to be lacking in some area. 
+
+As an example, remember what you have to do to create your own namespace in 
+Javascript? Yeah, 
+
+<pre class="sh_javascript"><code>
+  (function() {
+    // your isolated namespace here
+  })
+</code></pre>
+
+does the job. CoffeeScript will do that for you, no syntax to learn. Turns
+out, you always want to do that anyway. 
+
+Or, another example. I always have to glance at a reference to remember how
+to do prototype based OOP in javascript. Not just because it is not class 
+based, that part I've been able to wrap my head around by now. But because the
+syntax is so much like blessing references in Perl: 
+
+<pre class="sh_javascript"><code>
+  Foo.prototype.my_method = function my_method() {
+    return alert('hi');
+  };
+</code></pre>
+
+What the fail. This is so much typing, it's almost like Javascript is trying
+to look like Java. CoffeeScript makes this pleasant: 
+
+<pre class="sh_coffeescript"><code>
+  Foo::my_method: ->
+    alert('hi')
+</code></pre>
+
+CoffeeScript doesn't hide Javascript, it just makes it easy. ("Here's the rest
+of the introduction":http://jashkenas.github.com/coffee-script/)
+
+h2. Writing correct Javascript
+
+CoffeeScript also takes the pain out of writing correct Javascript. Maybe I am
+in this business for too long already, but I distinctly remember fighting with
+Internet Explorer (was it 4?) for hours on end over a misplaced semicolon.
+Generations of future programmers will be able to learn how not to do error
+reporting from that piece of crap. It just told you that you had an error in
+line XYZ, and whatever number X, Y and Z was, you could be sure that it was
+unrelated to the line the semicolon was missing in.
+
+JSLint was an improvement. At least you could have some kind of feedback on
+your code before going into a frustration loop with IE. Mostly JSLint would
+tell you all the things that would trip up a browser and fixing its warnings
+could get you that far already. 
+
+CoffeeScript takes this one step further. Since its output passes JSLint
+without warnings, its like that red sports car - faster *AND* cooler. My 
+experience with it says that when coffee compiles it, it probably runs. And
+since there is less noise to it, its easier to get right. No fiddling with
+bits of syntax, just writing code. 
+
+h2. Plays well with others
+
+*Exhibit A*: A piece of "HAML":http://haml-lang.com/ code: 
+
+<pre class="sh_haml"><code>
+  .part
+    .name John Doe
+    .address Infinity Drive
+</code></pre>
+
+*Exhibit B*: "Sass":http://sass-lang.com/
+
+<pre class="sh_sass"><code>
+  .part
+    color: #fff
+</code></pre>
+
+And *finally* (maybe in that same HAML file, thanks to "coffee-haml-filter":http://github.com/inem/coffee-haml-filter): 
+
+<pre class="sh_haml"><code>
+  :coffee
+    $('.name').each(->
+      alert(this.text()))
+</code></pre>
+
+My ruby liking soul is only slightly worried by the importance of indentation
+in these languages. Putting that aside, I can really enjoy all of them.
+(And no, don't write all of your CoffeeScript inline with your haml!)
+
+h2. The Result
+
+After several attempts, I have been able to complete a rewrite. The resulting
+code will now be used in the application I am building. You can look at it
+here:
+"kschiess/jquery.objectlist":http://github.com/kschiess/jquery.objectlist.
+
+The code I have written reads like a cross between Ruby, Smalltalk and Scheme.
+The methods have become really short, and some of the data is hidden as
+lambdas in hooks. CoffeeScript will allow to do all of this: Writing clean OO
+code, writing functional style and just writing idiomatic .. Javascript.
+
+Writing this has felt good and really really funky. I have focused on the 
+usability of the language in these notes, but I urge you to look at the 
+"introduction":http://jashkenas.github.com/coffee-script/. CoffeeScript has
+ 
+* list comprehension 
+* terse lambda syntax, with or without this binding
+* pattern matching
+* heck, even a small rake replacement!
+
+Do check it out!
