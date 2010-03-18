@@ -14,10 +14,6 @@ This is a story from real life. In our recent release of
 "net-ldap":http://rubyforge.org/projects/net-ldap we have this snippet of
 code:
 
-<pre class="sh_bash"><code>
-  $ gem install coffee-script
-</code></pre>
-
 <pre class="sh_ruby"><code>
   begin
     @socket = TCPSocket.new(host, port)
