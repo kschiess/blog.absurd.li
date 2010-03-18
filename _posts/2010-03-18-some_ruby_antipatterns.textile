@@ -1,0 +1,121 @@
+---
+title: A few Ruby Anti-Patterns
+tags: 
+  - ruby
+  - anti pattern
+---
+
+Some things you can do with Ruby you just shouldn't. Often one doesn't notice
+until later on, when you are looking for a bug in code.
+
+h2. rescue everything
+
+This is a story from real life. In our recent release of
+"net-ldap":http://rubyforge.org/projects/net-ldap we have this snippet of
+code:
+
+<pre class="sh_bash"><code>
+  $ gem install coffee-script
+</code></pre>
+
+<pre class="sh_ruby"><code>
+  begin
+    @socket = TCPSocket.new(host, port)
+  rescue
+    raise LdapError, "Something is wrong with your connection."
+  end
+</code></pre>
+
+So when you get the 'Something is wrong ...' error, where do you go look?
+Right, you check and recheck your credentials. 
+
+Except that wasn't the problem. We recently reorganized the project and fixed
+some Ruby 1.9 stuff. This was the reason for our rerelease as well. During
+that work, we (ok, probably I did) fat-fingered the import of
+'<code>socket</code>' with the obvious <code>NameError</code> as a
+consequence.
+
+The above code will tell you that something is wrong with the connection even
+if nothing is. Look at how I think this should be written: 
+
+<pre class="sh_ruby"><code>
+  begin
+    @conn = TCPSocket.new( server[:host], server[:port] )
+  rescue SocketError
+    raise LdapError, "No such address or other socket error."
+  rescue Errno::ECONNREFUSED
+    raise LdapError, "Server #{server[:host]} refused connection on port #{server[:port]}."
+  end
+</code></pre>
+
+We could dispute the details here, but the main point is that you should
+almost never _rescue everything_. This is an anti-pattern in Ruby and in other
+languages as well. If you don't know what happened, make it scream really
+loud.
+
+There is another big anti-pattern hidden in this war story: Write tests for
+your code. Because that would have told me what was wrong.
+
+h2. Extending basic Types
+
+Let's say I have a few derivates of Ruby basic types with strings attached: 
+
+<pre class="sh_ruby"><code>
+  class StringString < String
+    attr_accessor :strings
+  end
+  class StringArray < Array
+    attr_accessor :strings
+  end
+  
+  ary = [
+    StringString.new('foo'),
+    StringArray.new([StringString.new('bar')])
+  ]
+</code></pre>
+
+I want to create a clean YAML representation of this, looking something like
+
+<pre class="sh_yaml"><code>
+  ---
+  - foo
+  - - bar
+</code></pre>
+
+But turning what I have into YAML I get this: 
+
+<pre class="sh_yaml"><code>
+  --- 
+  - !str:StringString foo
+  - !seq:StringArray 
+    - !str:StringString bar
+</code></pre>
+
+And of course, turning it to YAML is just one of the problems you have.
+Everywhere you use inspection/reflection in your code, these
+<code>StringString</code> things won't behave correctly.
+
+Stop and think about how you would do it for a second. There seems to be no
+real easy way to do this, even when you own the <code>StringString</code> and
+<code>StringArray</code> types. Of course, if you knew you only had 
+strings, you could use <code>#to_s / #to_a</code> and be done with it. But 
+polymorphically? What we need is a <code>#detach_strings</code> method.
+
+<pre class="sh_ruby"><code>
+  def detach_strings(mess)
+    mess.class.ancestors[1].new(mess)
+  end
+
+  puts detach_strings(StringString.new('bar')).to_yaml
+  # => "--- bar\n"
+</code></pre>
+
+Ugly, isn't it? Yeah. But in my opinion that is entirely the blame of the
+extended basic type anti-pattern. I wont spend time on making this beautiful,
+but rather will transform the code so it doesn't use extended types anymore.
+
+h2. Your own Anti-Patterns?
+
+Do you have any Ruby anti-patterns from your work? I would be interested in 
+hearing about them. 
+

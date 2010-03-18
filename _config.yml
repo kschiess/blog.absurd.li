@@ -1,5 +1,3 @@
-markdown: textile
-
 # Use henrik-jekyll that has the haml/sass extension for this site.
 sass: true
 haml: true
