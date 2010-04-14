@@ -1,0 +1,103 @@
+---
+title: Migrating Request Trackers backend
+tags: 
+  - request tracker
+  - unix
+  - postgresql
+  - sqlite
+---
+
+I've been stupid enough to try to use "Request Tracker":http://bestpractical.com/rt/ 
+with its default (sqlite) backend. 
+"Bad idea":http://www.sqlite.org/faq.html#q5. Please read that and don't think
+I am bashing sqlite, I am not. 
+
+As a note to self and to the next guy falling into that trap, here's how it 
+can be done: 
+
+h2. Preparation
+
+Install postgresql and make sure you can access it through a local user using
+passwords. This might mean you have to tweak postgresqls settings, notably
+<code>pg_hba.conf</code>. 
+
+If you're using Request Tracker version 3.8.4, you can use the schema behind
+this "link":/samples/2010-04-14/request_tracker-3.8.4-schema.sql to prepare
+your database. Otherwise I would suggest using the tool that is provided 
+in the installation (<code>rt-setup-database</code>) to do that. Your command
+line will have to look something like this: 
+
+<pre class="sh_bash"><code>
+  $ rt-setup-database --action schema
+</code></pre>
+
+RT will use its database settings from
+<code>/etc/request-trackerXXX/RT_SiteConfig.pm</code> to connect to your
+database, so make sure that points to the new location...
+
+h2. Migration
+
+Now you have two databases that have exactly the same schema, but one contains
+the data. Turn off your mail gateway and your apache (site is closed for now)
+and install the prerequisites for this
+"script":/samples/2010-04-14/migrate_to_pgsql.rb. This should mostly be the
+'pg' gem and the 'sqlite3' gem. Using aptitude, this would look like this:
+
+<pre class="sh_bash"><code>
+  $ aptitude install libpgsql-ruby libsqlite3-ruby
+</code></pre>
+
+Running the script should be easy: Give it the location of RTs sqlite database
+as parameter. Adjust the pgsql connection settings inside the script to match
+your installation.
+
+The script will insert all rows from sqlite into postgresql that are missing 
+there. You can run the script a few times; it will reach a steady state the 
+second time round that looks like this: 
+
+<pre class="sh_bash"><code>
+  ACL: Source: 26, Target: 26
+  ... lots of tables ...
+</code></pre>
+
+Those are all tables and their corresponding <code>max(id)</code>s. 
+
+h2. Correct the sequences
+
+Since all <code>INSERT</code>s are done giving the <code>id</code> of the 
+rows the postgresql sequences will all be off and you wont be able to insert
+new data. This is easy to correct: Run the following lines against your database: 
+
+<pre class="sh_sql"><code>
+  select setval('acl_id_seq', (select max(id) from acl));
+  select setval('attachments_id_seq', (select max(id) from attachments));
+  select setval('attributes_id_seq', (select max(id) from attributes));
+  select setval('cachedgroupmembers_id_seq', (select max(id) from cachedgroupmembers));
+  select setval('customfields_id_seq', (select max(id) from customfields));
+  select setval('customfieldvalues_id_seq', (select max(id) from customfieldvalues));
+  select setval('groupmembers_id_seq', (select max(id) from groupmembers));
+  select setval('groups_id_seq', (select max(id) from groups));
+  select setval('links_id_seq', (select max(id) from links));
+  select setval('objectcustomfields_id_s', (select max(id) from objectcustomfields));
+  select setval('objectcustomfieldvalues_id_s', (select max(id) from objectcustomfieldvalues));
+  select setval('principals_id_seq', (select max(id) from principals));
+  select setval('queues_id_seq', (select max(id) from queues));
+  select setval('scripactions_id_seq', (select max(id) from scripactions));
+  select setval('scripconditions_id_seq', (select max(id) from scripconditions));
+  select setval('scrips_id_seq', (select max(id) from scrips));
+  select setval('templates_id_seq', (select max(id) from templates));
+  select setval('tickets_id_seq', (select max(id) from tickets));
+  select setval('transactions_id_seq', (select max(id) from transactions));
+  select setval('users_id_seq', (select max(id) from users));
+</code></pre>
+
+These statements are a copy of what himdel has on his
+"blog":http://himdel.blogspot.com/2009/04/migrating-request-tracker-from-rt-345.html.
+
+h2. Done
+
+This should conclude your migration. Start apache and the mail gateway again
+and browse through your tickets – they are all there. Of course, this is
+at your own peril. But if all goes well, you will have migrated your Request
+Tracker instance to PostgreSQL in almost no time.
+
