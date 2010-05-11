@@ -1,0 +1,14 @@
+---
+title: New Stuff in rspec - a Cheatsheet
+tags: 
+  - rspec
+  - ruby
+  - cheat sheet
+---
+
+"This":http://pure-rspec-rubynation.heroku.com/ presentation puts together a
+nice overview of features that old-school rspec users like me don't really
+use. I have decided to put myself to it and extracted a "cheat
+sheet":/img/2010-05-11/rspec_new_features.pdf from the presentation for your
+perusal. Full steam ahead!
+
