@@ -18,7 +18,17 @@
     %link{ :rel => "shortcut icon", :type => "image/x-icon", :href => "/favicon.ico" }
     
     -# %script{ :type => 'text/javascript', :src => 'http://getfirebug.com/releases/lite/1.2/firebug-lite.js' }
-
+    
+  :plain
+    <script type="text/javascript">
+    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <script type="text/javascript">
+    try {
+    var pageTracker = _gat._getTracker("UA-16365074-1");
+    pageTracker._trackPageview();
+    } catch(err) {}</script>
   %body{:onload => 'sh_highlightDocument("/js/shjs-0.6/lang/", ".min.js")'}
     #everything
       .tagline
