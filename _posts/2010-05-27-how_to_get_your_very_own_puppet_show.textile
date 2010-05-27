@@ -1,0 +1,132 @@
+---
+title: How to get your own puppet show
+tags: 
+  - system administration
+  - puppet
+  - ruby
+  - guide
+---
+
+When I mention "puppet":http://www.puppetlabs.com/ to people, a lot of them
+answer: "Oh, don't get started on this, I should do that as well." Yeah, well
+guess what, you should. Here's my helping hand to that. 
+
+Puppet is a tool that allows you to manage the configuration of your data
+center in a recipe and then apply it to each machine. It is open-sourceish and
+developed by a company called '"Puppet Labs":http://www.puppetlabs.com/' (formerly: 'Reductive Labs') in 
+Portland, Oregon. 
+
+Here's what you need to get started with puppet: 
+
+* *A puppet master*
+  This can be any machine at all, although I would recommend you virtualize
+  this. The puppet master will not be doing a lot at first. It seems like a 
+  real box would be wasted on this. 
+  
+* At least *one other machine* you want to manage. 
+
+Of course, the real benefits of puppet will apply when you manage hundreds or 
+thousands of machines with it. But. Knowing puppet, I would even manage my two
+machine production setup with it. For any kind of setup that has real value, 
+you need a description of some kind on how to reconstruct the machines should
+you loose them completely. Most people have started entering this step-by-step information into a Wiki of a kind. Puppet can be that as well. 
+
+Either way. Here's what comes next in this article: 
+
+* Pick a puppet 
+* Install the puppet master
+* Create an initial configuration
+* Install puppet on the clients
+
+h2. Pick a puppet
+
+The real trouble with puppet is that it is (still) a relatively young project
+and under active development. You want to get a really recent puppet version
+to be able to use new features. On the other hand, puppet is the first thing
+you need to install on a machine -- to do this in an automated way, you want
+to be able to use what your package management gives you.
+
+I would recommend you look at the puppet versions your package managements
+give you (you will probably be managing more than one OS/ OS version). Then
+pick the lowest number. That is the version you will be writing your puppet
+recipies against. If that is not high enough -- you need some other solution.
+
+We've gone the other way and have done our own packaging. This way, we can be
+sure that all puppets talk to each other. I can't really tell you here how to
+do that, but a good start is to fetch the latest package for your OS, unpack
+it, replace the puppet files in it and then repack it. Most often, this will
+work fine.
+
+h2. Install the puppet master
+
+The puppet master machine should be reachable as 'puppet.YOURDOMAIN' or just
+'puppet'. This will avoid a lot of trouble later on. 
+
+Your puppet master will need a package called 'puppetmaster'. This can also be
+installed via rubygems, but most often the OS package will give you
+startup/shutdown scripts that the gem doesn't have.
+
+<pre class="sh_bash"><code>
+  root       734  0.0  0.0   5992   604 tty1     Ss+  08:44   0:00 /sbin/getty -8 38400 tty1
+  puppet    1044  0.5  0.9 116356 39356 ?        Ssl  08:45   0:00 /usr/bin/ruby1.8 /usr/sbin/puppetmasterd --masterport=8140
+</code></pre>
+
+
+
+As a result of the above step, you should see a puppetmaster binary running
+and you should have the 'puppetca' script available (as root). 
+
+You will also need some kind of source control system. I recommend git ('git-core'). 
+
+h2. Create an initial configuration
+
+Here is a "sample puppet
+configuration":/samples/2010-05-puppet/puppet_sample_config.tgz for you to
+fill in. This follows the "puppet best
+practices":http://projects.puppetlabs.com/projects/puppet/wiki/Puppet_Best_Practice.
+Just check this in into a git repository and fill in the blanks.
+
+Then have a look at <code>/etc/puppet/</code> on your puppet master server. (or where your config sits) Some of these files are also worthy to be included
+in your repository. Candidates are <code>fileserver.conf</code> and <code>puppet.conf</code>.
+
+Once you've gone and completed the sample structure, you can make a checkout
+of it to <code>/etc/puppet/</code>. This is what you will be doing each time
+you make a change to the configuration. 
+
+h2. Install puppet on the clients
+
+Now let's link up a client that has puppet installed. First, you should request a certificate from your puppet master: 
+
+<pre class="sh_bash"><code>
+  # puppetd --test
+  warning: peer certificate won't be verified in this SSL session
+  notice: Did not receive certificate
+  notice: Set to run 'one time'; exiting with no certificate
+</code></pre>
+
+On your server (as root), list the clients that have requested a certificate (but haven't received one yet): 
+
+<pre class="sh_bash"><code>
+  # puppetca -l
+  myfirstnode.DOMAIN
+</code></pre>
+
+Sign the certificate: 
+
+<pre class="sh_bash"><code>
+  # puppetca -s myfirstnode.DOMAIN
+  Signed myfirstnode.DOMAIN
+</code></pre>
+
+Now repeat: 
+
+<pre class="sh_bash"><code>
+  # puppetd --test
+  ...
+</code></pre>
+
+You should see your initial configuration for the node being applied. 
+
+h2. Parting Words
+
+These guidelines have been compiled from documentation at puppet labs and from my own experience. "Here":http://docs.puppetlabs.com/guides/configuring.html "are":http://docs.puppetlabs.com/ "some":http://docs.puppetlabs.com/guides/language_tutorial.html of the links that I recommend also reading. And now off you go, recruit an "army of puppets to reign over":http://www.youtube.com/watch?v=x5sXk5tHbqA!
