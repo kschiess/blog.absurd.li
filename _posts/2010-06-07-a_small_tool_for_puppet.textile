@@ -1,0 +1,38 @@
+---
+title: last_puppetrun - A small tool for your puppets
+tags: 
+  - puppet
+  - last_puppetrun
+  - automation
+  - system administration
+---
+
+To complement last weeks post about "getting puppet into your
+datacenter":/2010/05/27/how_to_get_your_very_own_puppet_show.html, here's a
+small post on a tool I wrote to monitor your puppets.
+
+The tool will look at <code>/var/log/messages</code> and look for the last 
+successful puppet run for all your nodes (as given by 
+
+<pre class="sh_bash"><code>
+  $ puppetca -al
+</code></pre>
+
+). It needs to be run as root. 
+
+You can download it "from github":http://github.com/kschiess/last_puppetrun.
+
+<pre class="sh_bash"><code>
+  git clone git://github.com/kschiess/last_puppetrun.git
+</code></pre>
+
+h2. Not the same as <code>puppetlast</code>
+
+Connaisseurs of puppet will bark: "But there is already puppetlast". _Yes.
+There is._ The information <code>puppetlast</code> gives you is _"When did
+puppet last run on host X"_?. That is not at all the same as "When did puppet
+last _successfully_ run on host X?" - which is the answer provided by
+<code>last_puppetrun</code>.
+
+If you have a parse error / a doubly defined resource in your puppet recipes, 
+the tool presented here will allow you to see the problem early. 
