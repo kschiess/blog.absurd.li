@@ -1,9 +1,9 @@
-!content_width = 710px
-!code_outset = 130px
+$content_width: 710px
+$code_outset: 130px
 
 #everything
   width: 100%
-  min-width= !content_width
+  min-width: $content_width
   min-height: 100%
   position: relative
   
@@ -49,16 +49,16 @@ code
   margin-right: auto
   margin-bottom: 100px
   margin-top: 100px
-  width = !content_width
+  width: $content_width
   position: relative
   
   pre
-    margin-left= -!code_outset
-    width= !content_width + 10
+    margin-left: -$code_outset
+    width: $content_width + 10
 
   .post 
-    margin-left= !code_outset
-    margin-right= !code_outset
+    margin-left: $code_outset
+    margin-right: $code_outset
   
   ul, ol
     padding-left: 30px
@@ -70,12 +70,12 @@ code
     
     .newer
       position: absolute
-      right= !code_outset
+      right: $code_outset
       top: -2em
     .older 
       position: absolute
       top: -2em
-      left= !code_outset
+      left: $code_outset
         
 .tagline, .copyright
   width: 100%
