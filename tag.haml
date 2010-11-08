@@ -7,6 +7,7 @@ title: tag index
   %h1 Tags
   %dl
     - for (tag, pages) in site.tags.sort
+      - next if pages.size<2
       %dt{:id => CGI.escape(tag)}= h tag
       - for page in pages
         %dd= link_to_page(page)
