@@ -27,10 +27,10 @@ module Helpers
   
   def group_posts_by_month_and_day(posts)
     group = [:year, :month]
-    posts.reverse.group_by { 
+    posts.group_by { 
       |post| 
       group.map { |field| post.date.send(field) }
-    }.each do |(year, month), posts|
+    }.to_a.sort.reverse.tap { |i| p i }.each do |(year, month), posts|
       yield(year, month, posts)
     end
   end
