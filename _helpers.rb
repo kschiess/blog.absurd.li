@@ -30,7 +30,7 @@ module Helpers
     posts.group_by { 
       |post| 
       group.map { |field| post.date.send(field) }
-    }.to_a.sort.reverse.tap { |i| p i }.each do |(year, month), posts|
+    }.to_a.sort.reverse.each do |(year, month), posts|
       yield(year, month, posts)
     end
   end

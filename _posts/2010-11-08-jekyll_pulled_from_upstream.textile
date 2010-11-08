@@ -1,0 +1,19 @@
+---
+title: Merged upstream to jekyll
+tags: 
+  - jekyll
+  - haml
+  - merge
+---
+
+For those who use my inofficial fork of
+"jekyll":http://github.com/kschiess/jekyll that also speaks haml, good news:
+I've just completed another merge of the new features of jekyll with the
+changes that enable haml and sass.
+
+This time the merge bridges a gap of two minor versions; a lot of changes had
+happened upstream. Looks like we might soon be able to close down this fork
+and get official haml/sass support in jekyll, albeit only in unsafe mode. 
+
+Anyway, update today.
+
