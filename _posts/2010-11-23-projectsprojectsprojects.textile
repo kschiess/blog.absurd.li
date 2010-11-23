@@ -1,0 +1,56 @@
+---
+title: Projects, Projects, Projects... 
+tags: 
+  - snafu
+  - apple
+  - microsoft
+  - mail
+  - picky
+  - parslet
+---
+
+Usually when you don't hear from me here, I am really busy. The policy until 
+now has been not to write about that; but there I went and cracked. 
+
+h2. parslet
+
+I've discovered that the parser library I've written during my brief excursion 
+(that is to be repeated) into the world of compiler writing is valuable on
+its own. In fact, its probably even more valuable than any of the things I 
+did with the compiler. That's just the way these projects go. 
+
+I've thrown together a small "website":http://kschiess.github.com/parslet for
+the project and am working towards an 1.0 release. Encouragements, comments,
+... are welcome!
+
+h2. picky
+
+On a related note, I've been loosely involved in helping to get
+"picky":http://floere.github.com/picky/index.html ready for a 1.0 release as
+well. Picky is a search engine for categorized data, data that is organized in
+small fields. Like .. for example a database. But who has one of those, right?
+
+h2. Apple Mail woes
+
+At work I was trying to get Apple Mail and Thunderbird to autoconfigure
+email. My goal was to have the user enter 'john.doe@example.com' and figure
+out the rest by looking at our LDAP database.
+
+And I got it working. At least for Thunderbird which has a "documented
+API":https://wiki.mozilla.org/Thunderbird:Autoconfiguration and for Microsoft
+Outlook, which also has an
+"API":http://technet.microsoft.com/en-us/library/cc511507.aspx. Yeah, you read
+right. _Microsoft Outlook_. That didn't go according to plan.
+
+Apple Mail does two things for autodiscovery behind the scenes. 
+
+# It _phones home_ (apple.com) getting a binary answer that is AFAIK not
+  documented. Try with 'something@gmail.com'.
+# It pretends to speak Microsoft and _doesn't honor the answer_. It posts the
+  same autodiscovery XML request as Outlook does. Somehow I failed to get it
+  working with the same answer that Outlook accepts. *So there*.
+  
+You probably got by now that this is a tale of FAIL. Indeed I posted to 
+"stackoverflow":http://stackoverflow.com/questions/4245828/implementing-settings-autodiscovery-for-apple-mail about this, but can I really expect an answer to that? Universe? 
+Surprise me!.
+

@@ -31,7 +31,7 @@ module Helpers
       |post| 
       group.map { |field| post.date.send(field) }
     }.to_a.sort.reverse.each do |(year, month), posts|
-      yield(year, month, posts)
+      yield(year, month, posts.sort.reverse)
     end
   end
 end
