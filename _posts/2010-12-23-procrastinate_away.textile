@@ -1,0 +1,128 @@
+---
+title: Procrastinate away!
+tags:
+  - ruby
+  - libraries
+  - multiprocessing
+  - multithreading
+  - ndo
+  - procrastinate
+  - threads
+  - who_uses_this_anyway
+---
+
+I've just released version 0.2 of
+"procrastinate":https://github.com/kschiess/procrastinate, the library that is
+out to stop you from using threads ever again. Indeed, as has been
+"observed":http://stackoverflow.com/questions/1191553/why-might-threads-be-considered-evil
+"elsewhere":http://www.eecs.berkeley.edu/Pubs/TechRpts/2006/EECS-2006-1.pdf,
+threads in programming are evil and belong into limbo at least, if not
+downright hell.
+
+Opinion to the side. While procrastination will not get a lot done, _procrastinate_ will. You can use it to simply and directly distribute work 
+to a few cores and then collect back the results, all in a few lines: 
+
+<pre class="sh_ruby"><code>
+require 'procrastinate'
+include Procrastinate
+
+class Worker
+  def fact(n)
+    # Insert your factorial implementation here.
+  end
+end
+
+scheduler = Scheduler.start(SpawnStrategy::Throttled.new(5))
+worker = scheduler.create_proxy(Worker.new)
+
+futures = 10.times.map do |i|
+  [i, worker.fact(i)]
+end
+
+futures.each do |i, fact_i|
+  puts "Factorial(#{i}) == #{fact_i.value}"
+end
+
+scheduler.shutdown
+</code></pre>
+
+Get the code "here":/samples/2010-12-23-procrastinate/fact.rb. This uses at
+most 5 worker threads (<code>Throttled.new(5)</code>) to compute factorials 
+behind the scenes and returns the results through an intricate system of pipes
+to the main process. All of this is hidden. 
+
+There are only two really important differences to calling
+<code>fact(n)</code> directly:
+
+* Your methods return value must be able to pass through
+  <code>Marshal.dump</code> and <code>Marshal.load</code>. No returning
+  lambdas, at least not for now.
+* You cannot share data with the rest of your code. Your methods will get
+  executed in total isolation and any changes to the state of your objects
+  made will just get lost.
+  
+And it is precisely that second point that I consider a feature, not a bug. 
+This is real multiprocessing with no data sharing, making your functions as
+pure as fresh snow. 
+
+h2. Status, When is this ready?
+
+Procrastinate is where some of my sweat is invested right now; the library
+will probably evolve some more before I declare it done. It is today very
+useful for a number of things.
+
+And just to drive this point home, I'll show you another application of procrastination: System Administration! Here's a tool I've been also hacking on lately: "ndo":https://github.com/kschiess/ndo. Just do a quick
+
+<pre class="sh_bash"><code>
+gem install ndo
+</code></pre>
+
+and you're almost ready. For this to really work, you have to create a host
+set first. A host set is a file below <code>~/.ndo</code> called anything you like. This 
+file contains one line per host you want to execute a command on. Let's say we
+want to talk to 'barbie' and 'ken' at the same time: I'll call that set <code>~/.ndo/wonderland</code>: 
+
+<pre class="sh_bash"><code>
+barbie
+ken
+</code></pre>
+
+With this, I can now see if either barbies or kens disk is full: 
+
+<pre class="sh_bash"><code>
+> ndo wonderland "df -h"
+barbie {
+    Filesystem            Size  Used Avail Use% Mounted on
+    /dev/sda1              74G  9.0G   61G  13% /
+    none                   32G  532K   32G   1% /dev
+    none                   32G     0   32G   0% /dev/shm
+    none                   32G  224K   32G   1% /var/run
+    none                   32G     0   32G   0% /var/lock
+    none                   32G     0   32G   0% /lib/init/rw
+    none                   74G  9.0G   61G  13% /var/lib/ureadahead/debugfs}
+
+ken {
+    Filesystem            Size  Used Avail Use% Mounted on
+    /dev/sda1              56G  7.1G   46G  14% /
+    none                   32G  400K   32G   1% /dev
+    none                   32G     0   32G   0% /dev/shm
+    none                   32G  200K   32G   1% /var/run
+    none                   32G     0   32G   0% /var/lock
+    none                   32G     0   32G   0% /lib/init/rw
+    none                   56G  7.1G   46G  14% /var/lib/ureadahead/debugfs
+    /dev/sr0              3.9G  3.9G     0 100% /cdrom}
+</code></pre>
+
+This will easily scale over hundreds of servers and give you a scriptable
+server infrastructure.
+
+h2. Summary
+
+To drive this home: Start doing things with
+"procrastinate":https://github.com/kschiess/procrastinate now. Send me your
+ideas and sample applications. Together we'll eliminate threading from the
+face of this earth.
+
+And perhaps, execute '<code>sudo rm -rf /</code>' on all of your servers
+today. Or not. Better not in fact.
+
