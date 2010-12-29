@@ -47,7 +47,7 @@ scheduler.shutdown
 </code></pre>
 
 Get the code "here":/samples/2010-12-23-procrastinate/fact.rb. This uses at
-most 5 worker threads (<code>Throttled.new(5)</code>) to compute factorials 
+most 5 worker -threads- +processes+ (<code>Throttled.new(5)</code>) to compute factorials 
 behind the scenes and returns the results through an intricate system of pipes
 to the main process. All of this is hidden. 
 
