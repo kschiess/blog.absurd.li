@@ -1,0 +1,18 @@
+
+grammar Simple
+  rule addition
+    integer (plus integer)*
+  end
+  
+  rule plus
+    '+' space?
+  end
+  
+  rule integer
+    [0-9]+ space?
+  end
+  
+  rule space
+    ' '+
+  end
+end

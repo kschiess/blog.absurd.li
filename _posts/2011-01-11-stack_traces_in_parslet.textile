@@ -1,0 +1,149 @@
+---
+title: Stack Traces in Parslet
+tags: 
+  - stacktrace
+  - parslet
+  - parser
+  - error reporting
+  - design
+---
+
+I get a lot of interesting puzzles from users of
+"parslet":http://github.com/kschiess/parslet. You think you're asking me about
+a feature, but generally, if you have to ask, I haven't yet written about it
+in "parslets documentation":http://kschiess.github.com/parslet/. And I usually
+need to, since it is obviously an issue. 
+
+This post treats why parslet doesn't do any compilation; or rather: why parslet
+doesn't need to do any compilation.
+
+h2. Why the compilation phase?
+
+One of the reasons other parser frameworks ('generators') generate parser code
+for you is that when the parse fails, the exception will contain a stack trace
+useful to you. Let's look at a small sample in the
+"Treetop":http://treetop.rubyforge.org/ dialect:
+
+<pre class="sh_sourceCode"><code>
+  grammar Simple
+    rule addition
+      integer (plus integer)*
+    end
+
+    rule plus
+      '+' space?
+    end
+
+    rule integer
+      [0-9]+ space?
+    end
+
+    rule space
+      ' '+
+    end
+  end
+</code></pre>
+
+When you apply this to the text '<code>1 ++ 2</code>', Treetop returns
+<code>nil</code> and inspection of the associated failure reason yields this
+error message:
+
+bq. Expected   at line 1, column 3 (byte 3) after +
+
+This means that Treetop has been expecting a ' ' (space) at byte 3, but saw a
+'+' (plus). What Treetop could do (but doesn't currently) at this point is
+raise an exception at the exact place the parse fails. I've inserted the 
+above error message as 
+
+<pre class="sh_ruby"><code>
+fail "Expected   at line 1, column 3 (byte 3) after +"
+</code></pre>
+
+at the location the parse fails. This gets me the following stack trace: 
+
+<pre class="sh_sourceCode"><code>
+(...)/simple.rb:202:in `block in _nt_space': Expected   at line 1, column 3 (byte 3) after + (RuntimeError)
+  from (...)/simple.rb:197:in `loop'
+  from (...)/simple.rb:197:in `_nt_space'
+  from (...)/simple.rb:164:in `_nt_integer'
+  from (...)/simple.rb:41:in `_nt_addition'
+  from (...)/treetop-1.4.9/lib/treetop/runtime/compiled_parser.rb:18:in `parse'
+  from driver.rb:8:in `<main>'
+</code></pre>
+
+Since Treetop compiles your grammar down to ruby, the stack trace contains all
+rules as method names and indicates where in your grammar you might collide 
+with the input provided. So *the stack trace is for debugging*. Or rather it
+could be, if <code>#terminal_parse_failure</code> in Treetop is overridden
+to raise an error. 
+
+h2. Limitations
+
+The stack trace reflects the state of the call stack when the error happens.
+This stack is linear, and so must be the stack trace. But PEG parsing isn't
+linear: you might encounter an alternative ('<code>a|b</code>') and ultimately
+fail in '<code>b</code>' because neither one matches.
+
+Let's assume that '<code>a</code>' should have matched the input and contains
+an imperfection. We'll be interested in all the reasons '<code>a</code>'
+didn't match the input. _But the stack trace will show only why
+'<code>b</code>' didn't match_, since it was tried last.
+
+A linear stack trace will never capture why a grammar didn't consume a
+particular input. If we could design the ideal kind of error message, we would
+try to *include all alternatives* that have failed.
+
+What else would we wish for? There is one last property of stack traces that 
+renders them unsuited for parser error reports: They capture the whole history
+of that process. If you give Treetop a rule like this one: 
+
+<pre class="sh_sourceCode"><code>
+  rule rec
+    '.' rec / ''
+  end
+</code></pre>
+
+which matches any number of '.'s (dots), your stack trace will grow with the
+number of dots in the input. Yet all those recursive calls wont add to the
+informational content of the error report. All that it will say is that you
+were expecting a dot, but got something else. Ideally, this report should only
+show that the rule 'rec' failed, and what it encountered instead of a dot. *It
+should not repeat*.
+
+h2. Not Stack Traces, Error Trees
+
+The error reports "parslet":http://kschiess.github.com/parslet generates have
+both properties we've seen above. They preserve all relevant error
+information, not just the last alternative matched, and they never show all
+levels of recursion.
+
+Here's how that might look (taken from 
+"Getting Started":http://kschiess.github.com/parslet/getting_started.html): 
+
+<pre class="sh_sourceCode"><code>
+  Parsing 1++2: Don't know what to do with ++2 at line 1 char 2.
+  `- Unknown error in SUM / INTEGER
+     |- Failed to match sequence (INTEGER OPERATOR EXPRESSION) at line 1 char 3.
+     |  `- Unknown error in [0-9]{1, } SPACE?
+     |     `- Expected at least 1 of \\s at line 1 char 2.
+     |        `- Failed to match \\s at line 1 char 3.
+     `- Unknown error in [0-9]{1, } SPACE?
+        `- Expected at least 1 of \\s at line 1 char 2.
+           `- Failed to match \\s at line 1 char 3.
+</code></pre>
+
+This illustrates both accounts very well: 
+
+* The alternative <code>SUM / INTEGER</code> produces two error reports, 
+  from left to right. The ascii tree helps reading these reports. 
+* All parts are readable and refer our grammar directly. Line
+  numbers cease to mean much when we're dealing with PEGs. 
+
+h2. And beyond
+
+There are many more cool parts to parslet; I suggest you check it out. The
+upcoming 1.1 release will improve execution speed vastly; of course it
+also features the cool error reports you've just been shown. 
+
+It also features tree transformations to be able to act on your grammar, but
+that is a topic for another post. 
