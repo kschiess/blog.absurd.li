@@ -48,7 +48,7 @@ When you apply this to the text '<code>1 ++ 2</code>', Treetop returns
 <code>nil</code> and inspection of the associated failure reason yields this
 error message:
 
-bq. Expected   at line 1, column 3 (byte 3) after +
+bq. <pre>Expected   at line 1, column 3 (byte 3) after +</pre>
 
 This means that Treetop has been expecting a ' ' (space) at byte 3, but saw a
 '+' (plus). What Treetop could do (but doesn't currently) at this point is
