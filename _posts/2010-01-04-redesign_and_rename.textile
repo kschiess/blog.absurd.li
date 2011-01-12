@@ -6,6 +6,7 @@ tags:
   - ruby
   - toamqp
   - open source
+  - design
 ---
 
 For those of you following the thrift_over_amqp_transport plugin: I have just

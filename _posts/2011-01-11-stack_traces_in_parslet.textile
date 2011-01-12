@@ -118,7 +118,7 @@ information, not just the last alternative matched, and they never show all
 levels of recursion.
 
 Here's how that might look (taken from 
-"Getting Started":http://kschiess.github.com/parslet/getting_started.html): 
+"Getting Started":http://kschiess.github.com/parslet/get-started.html): 
 
 <pre class="sh_sourceCode"><code>
   Parsing 1++2: Don't know what to do with ++2 at line 1 char 2.

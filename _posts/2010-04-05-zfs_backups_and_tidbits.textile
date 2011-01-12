@@ -4,6 +4,7 @@ tags:
   - zfs
   - ruby
   - algorithm
+  - design
 ---
 
 It seems that OpenSolaris zfs has already got <code>zfs backup</code> and 
