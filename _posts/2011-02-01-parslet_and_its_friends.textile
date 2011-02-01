@@ -31,8 +31,78 @@ parslet, so these benchmarks can be rerun once either one changes.
 Here are the pure numbers: 
 
 | *Input size* | *parslet-1.0* | *parslet-1.1* | *treetop* | *citrus* |
-| 1          | 2           | 3           | 4       | 5      |
+| 185 chars    | 23.644s       | 0.291s        | 0.644s    | 2.503s   |
+| 361 chars    | 14m28.970s    | 0.335s        | 0.405s    | 1m16.155s|
+| 671 chars    | 19m2.713s     | 0.390s        | 0.421s    | 1m26.287s|
+| 1671 chars   | _ages_        | 0.581s        | 0.477s    | 1m34.930s|
+| 9796 chars   | _ages_        | 2.281s        | 0.933s    | 5m8.059s |
+| 22186 chars  | _ages_        | 5.521s        | 1.630s    | 7m35.694s|
+
+These figures have been measured on my weakly MacBook Air (1.6 GHz, the old
+one) using Ruby 1.9.2 p136.
 
 As a graphic: 
+
+XXX
+
+As you can see, treetop and parslet kind of fight it out along the X axis. 
+Here's another graphic that displays the relevant details of that: 
+
+XXX
+
+h1. Conclusions
+
+There is a big difference between the 1.0 and 1.1 version of parslet. In 
+fact, I think it is now big enough to warrant a release. I'll continue to do
+performance optimization. The numbers indicate that parslet looses out 
+versus treetop for big inputs because it allocates a lot of small objects. 
+I might find ways around that. 
+
+One of the ideas I'm tossing around is to optimize not only the way work is 
+being done, but the amount of work itself. If you imagine a tiny part
+of a grammar that is still not too unlikely to occur in reality: 
+
+<pre class="sh_ruby"><code>
+  str('foo') >> str('bar')
+</code></pre>
+
+It is quite obvious that this could be simplified by a grammar walk to
+
+<pre class="sh_ruby"><code>
+  str('foobar')
+</code></pre>
+
+This impacts on several levels. There is now just one parslet to test against,
+which means less code to execute. Input is read in bigger chunks; this will
+also benefit performance. And finally, error messages might even be improved
+by an optimized version of the grammar. Did I mention that you can now visit
+the grammar tree inside parslet by requiring
+<code>parslet/atoms/visitor</code>? So things are ready for this change, 
+its just that I want to flush the changes to the public, so to speak, before
+starting something new. 
+
+h2. Parslet vs...
+
+Comparing parslet against treetop or citrus based on performance alone will
+always miss the point. Certainly parsing speed matters. But being able to
+progress with your parser project and not hit roadblocks early matters just as
+much. I have had good feedback in that respect; it seems that what works for
+me also worked for others. Also, I am happy that people on irc
+(<code>#parslet</code> on freenode) have been helping each other out,
+(re)creating the friendly atmosphere I associate with Ruby.
+
+I think parslet needs to make further progress in several directions. One
+direction will certainly be execution speed. And treetops code generation
+really pays out, at least so it seems. But realize, treetop does less work as
+well; parslet keeps all these detailed error messages around for you to
+peruse. That's got to count as well, right?
+
+h2. These are exciting times
+
+And I am happy to be part of it. If you haven't seen parslets quiet beauty 
+yet, you should head to the "project home page":http://kschiess.github.com/parslet and check it out. If you have, please
+upgrade to 1.1 – it contains bug fixes and a speedy core. Doing so
+will improve your experience as well as your users experience!
+
 
 
