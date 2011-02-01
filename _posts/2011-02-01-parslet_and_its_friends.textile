@@ -1,0 +1,38 @@
+---
+title: Parslet and its friends
+tags: 
+  - parslet
+  - treetop
+  - citrus
+  - peg
+---
+
+"Parslet":http://kschiess.github.com/parslet is a small parser framework for
+Ruby. It uses the PEG formalism for its grammars, and its not alone to do so. 
+I have been asked to compare parslet to Treetop XXX and Citrus XXX. For 
+raw parsing speed. With complicated grammars. 
+
+I've generated treetop and citrus versions from "rkhs":rkh "Ansi Smalltalk
+grammar":Reak. As a byproduct, parslet now exposes visitors for the grammar
+and can generate these two formats as string.
+
+Benchmarks have been run using the above grammar with varying input sizes. 
+This matters a lot for this grammar, since it nests very deep. Speed is not
+going to vary linearly with size of input in some cases. 
+
+I've included two versions of parslet, the current one and the very soon to
+be released (these days in fact) 1.1.0. The difference between the two is
+about one month of performance optimization. 
+
+Treetop and citrus enter the competition with the latest released gems. I 
+am putting the code that generates these grammars into the next release of 
+parslet, so these benchmarks can be rerun once either one changes. 
+
+Here are the pure numbers: 
+
+| *Input size* | *parslet-1.0* | *parslet-1.1* | *treetop* | *citrus* |
+| 1          | 2           | 3           | 4       | 5      |
+
+As a graphic: 
+
+
