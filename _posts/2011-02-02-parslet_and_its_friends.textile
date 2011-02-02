@@ -8,13 +8,16 @@ tags:
 ---
 
 "Parslet":http://kschiess.github.com/parslet is a small parser framework for
-Ruby. It uses the PEG formalism for its grammars, and its not alone to do so. 
-I have been asked to compare parslet to Treetop XXX and Citrus XXX. For 
-raw parsing speed. With complicated grammars. 
+Ruby. It uses the PEG formalism for its grammars, and its not alone to do so.
+I have been asked to compare parslet to
+"Treetop":http://github.com/nathansobo/treetop and
+"Citrus":http://github.com/mjijackson/citrus. For raw parsing speed. With
+complicated grammars.
 
-I've generated treetop and citrus versions from "rkhs":rkh "Ansi Smalltalk
-grammar":Reak. As a byproduct, parslet now exposes visitors for the grammar
-and can generate these two formats as string.
+I've generated treetop and citrus versions from "rkhs":https://github.com/rkh
+"Ansi Smalltalk grammar":https://github.com/rkh/Reak. As a byproduct, parslet
+now exposes visitors for the grammar and can generate these two formats as
+string.
 
 Benchmarks have been run using the above grammar with varying input sizes. 
 This matters a lot for this grammar, since it nests very deep. Speed is not
@@ -24,9 +27,10 @@ I've included two versions of parslet, the current one and the very soon to
 be released (these days in fact) 1.1.0. The difference between the two is
 about one month of performance optimization. 
 
-Treetop and citrus enter the competition with the latest released gems. I 
-am putting the code that generates these grammars into the next release of 
-parslet, so these benchmarks can be rerun once either one changes. 
+Treetop and citrus enter the competition with the latest released gems. (1.4.9
+and 2.3.4 respectively) I am putting the code that generates these grammars
+into the next release of parslet, so these benchmarks can be rerun once either
+one changes.
 
 Here are the pure numbers: 
 
@@ -39,16 +43,15 @@ Here are the pure numbers:
 | 22186 chars  | _ages_        | 5.521s        | 1.630s    | 7m35.694s|
 
 These figures have been measured on my weakly MacBook Air (1.6 GHz, the old
-one) using Ruby 1.9.2 p136.
+one) using Ruby 1.9.2 p136. The exact figures don't matter much, we're after a
+graphic of big O here: 
 
-As a graphic: 
-
-XXX
+!/img/2011-02-02/comparison1.png!
 
 As you can see, treetop and parslet kind of fight it out along the X axis. 
 Here's another graphic that displays the relevant details of that: 
 
-XXX
+!/img/2011-02-02/comparison2.png!
 
 h1. Conclusions
 
@@ -63,13 +66,13 @@ being done, but the amount of work itself. If you imagine a tiny part
 of a grammar that is still not too unlikely to occur in reality: 
 
 <pre class="sh_ruby"><code>
-  str('foo') >> str('bar')
+  str('chunky') >> str('bacon')
 </code></pre>
 
 It is quite obvious that this could be simplified by a grammar walk to
 
 <pre class="sh_ruby"><code>
-  str('foobar')
+  str('chunkybacon')
 </code></pre>
 
 This impacts on several levels. There is now just one parslet to test against,
@@ -77,32 +80,32 @@ which means less code to execute. Input is read in bigger chunks; this will
 also benefit performance. And finally, error messages might even be improved
 by an optimized version of the grammar. Did I mention that you can now visit
 the grammar tree inside parslet by requiring
-<code>parslet/atoms/visitor</code>? So things are ready for this change, 
-its just that I want to flush the changes to the public, so to speak, before
-starting something new. 
+<code>parslet/atoms/visitor</code>? So things are ready for this step, its
+just that I want to flush the other changes to the public, so to speak, before
+starting something new.
 
 h2. Parslet vs...
 
 Comparing parslet against treetop or citrus based on performance alone will
 always miss the point. Certainly parsing speed matters. But being able to
 progress with your parser project and not hit roadblocks early matters just as
-much. I have had good feedback in that respect; it seems that what works for
+much. I've gotten good feedback in that respect; it seems that what works for
 me also worked for others. Also, I am happy that people on irc
 (<code>#parslet</code> on freenode) have been helping each other out,
 (re)creating the friendly atmosphere I associate with Ruby.
 
 I think parslet needs to make further progress in several directions. One
 direction will certainly be execution speed. And treetops code generation
-really pays out, at least so it seems. But realize, treetop does less work as
-well; parslet keeps all these detailed error messages around for you to
-peruse. That's got to count as well, right?
+really does a lot, at least so it seems. But realize, treetop does less work
+as well; parslet keeps all these detailed error messages around for you to
+peruse. That's got to count, right?
 
 h2. These are exciting times
 
 And I am happy to be part of it. If you haven't seen parslets quiet beauty 
 yet, you should head to the "project home page":http://kschiess.github.com/parslet and check it out. If you have, please
 upgrade to 1.1 – it contains bug fixes and a speedy core. Doing so
-will improve your experience as well as your users experience!
+will improve both yours and your users experience!
 
 
 
