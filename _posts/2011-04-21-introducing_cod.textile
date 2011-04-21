@@ -6,7 +6,9 @@ tags:
   - ruby
   - beanstalk
   - pipes
-  - library
+  - zack
+  - rpc
+  - unix
 ---
 
 "Cod":http://www.google.com/search?q=cod&tbm=isch is a library for
