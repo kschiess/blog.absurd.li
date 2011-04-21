@@ -1,0 +1,113 @@
+---
+title: Introducing Cod
+tags: 
+  - zeromq
+  - cod
+  - ruby
+  - beanstalk
+  - pipes
+  - library
+---
+
+"Cod":http://www.google.com/search?q=cod&tbm=isch is a library for
+interprocess communication that I am working on in the wee hours these days.
+My goal is to make things really simple and to overlay sockets, pipes and
+other means of communication with an interface that is easy to remember.
+
+Cod is open source software and will be released sometime this year. In the
+meantime, please look at
+"github.com/kschiess/cod":https://github.com/kschiess/cod to get an idea. Try
+it out and send me feedback!
+
+h2. Building on small elements
+
+One of the main ideas of parslet was to build on small elements and to
+construct larger ideas from them. This style of construction pervades my work
+and never gets old for me. In Cod, I am trying to achieve much the same. All
+work you do with it will be based on the concept of a unidirectional
+communication channel:
+
+<pre class="sh_ruby"><code>
+  channel = Cod.pipe
+</code></pre>
+
+This is a channel based on <code>IO.pipe</code>. It abstracts all the nitty
+gritty for you. Here's how you communicate with child processes: 
+
+<pre class="sh_ruby"><code>
+  control = Cod.pipe
+  
+  pid = fork do
+    loop do
+      # do something important & interesting
+      break if control.waiting? && control.get == :shutdown
+    end
+  end
+  
+  # eventually, deciding that we want to shut down the child: 
+  control.put :shutdown
+  
+  Process.waitall
+</code></pre>
+
+As you can see in the above sample, Cod defaults to serializing Ruby objects
+through channels. This will be open for customization later on, but is mostly
+what you'll want anyway. 
+
+For now, you are forced to ask if messages are queued up
+(<code>control.waiting?</code>) - however I will be working on allowing a
+Cod.select as well, implementing mixed #select calls on real FDs and Cod
+channels. This is real important for the style of process design I am aiming
+for. 
+
+h2. Channels in channels
+
+Cod channels try to be serializable. This sounds trivial, but has really 
+profound implications. Let's say you want to create a client/server type of 
+interaction: You will have a common server address and open up a channel to 
+it. But to be able to get a response back, you will need two things: 
+
+* A channel to receive answers in
+* and to be able to communicate the channel to the server. 
+
+Here's how you would probably do this in Cod:
+
+<pre class="sh_ruby"><code>
+  server = Cod.beanstalk('somehost:11300', 'server')
+  client = Cod.beanstalk('somehost:11300')
+  
+  server.put ['heiho server!', client]
+  answer = client.get
+</code></pre>
+
+And on the server side of this: 
+
+<pre class="sh_ruby"><code>
+  comm = Cod.beanstalk('somehost:11300', 'server')
+  
+  message, client = comm.get
+  answer = act_on(message)
+  client.put answer
+</code></pre>
+
+But of course, in real life this is slightly more complex. You will want to
+use <code>Cod::Client</code> and <code>Cod::Service</code> for this kind of
+interaction; it bundles this functionality and delivers a debugged and robust
+implementation. 
+
+h2. Bleeding edge
+
+The above code will not even work. I am illustrating the idea, see. But it 
+might very soon. Have a look at <code>./examples</code> - those typically 
+work. For now, assume that nothing else does.
+
+h2. Patterns of distributed computing
+
+Cod will: Capture and encode patterns of distributed computation/communication
+in a library that allows the programmer to focus on the level above. To allow
+communication (even cross-communication?) with the newest fad queue server X,
+you'll write a channel implementation for X and then profit of all higher
+order primitives directly.
+
+Nifty. Been chuckling about the simplicity of it for days now. (Insert thunder
+& lightning)
