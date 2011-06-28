@@ -18,13 +18,18 @@ end
 
 class SimpleTransform < Parslet::Transform
   rule(:number => simple(:n)) { Integer(n) }
+
   rule(
     :cond => simple(:c), 
     :then => simple(:t), 
     :else => simple(:e)) { [c, t, e] }
+  rule(
+    :cond => simple(:c), 
+    :then => simple(:t)) { [c, t, nil] }
 end
 
 if $0 == __FILE__
   p SimpleParser.new.number.parse('123')
   p SimpleTransform.new.apply(SimpleParser.new.parse(%Q(if 1 then 2 else 3)))
+  p SimpleTransform.new.apply(SimpleParser.new.parse(%Q(if 1 then 2)))
 end
