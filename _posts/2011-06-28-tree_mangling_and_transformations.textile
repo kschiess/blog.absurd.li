@@ -1,0 +1,239 @@
+---
+title: Parslet Tree Mangling and Transformations
+tags: 
+  - parslet
+  - transformations
+  - tree
+  - PORO
+---
+
+A simple parser in "parslet":http://kschiess.github.com/parslet will at first
+only output strings from its parsing stage:
+
+<pre class="sh_ruby"><code>
+  class SimpleParser < Parslet::Parser
+    root :ifthenelse
+
+    rule(:ifthenelse) {
+      _if >> _then >> _else.maybe
+    }
+
+    rule(:_if)    { str('if') >> space? >> number }
+    rule(:_then)  { str('then') >> space? >> number }
+    rule(:_else)  { str('else') >> space? >> number }
+
+    rule(:number) { match["0-9"].repeat(1) >> space? }
+
+    rule(:space?) { match["\s"].repeat }
+  end
+  
+  SimpleParser.new.parse(%Q(if 1 then 2 else 3))
+  # => "if 1 then 2 else 3"@0
+</code></pre>
+
+This means that a match has been found at input position 0. That's all the
+information you can get from this. But what if this is not enough? 
+
+You add tags. Let's say, we want to know what numbers are in the if, then and
+else branch, respectively. It would only be natural to assume that tagging 
+number like this: 
+
+<pre class="sh_ruby"><code>
+  ...
+  rule(:number) { match["0-9"].repeat(1).as(:number) >> space? }
+  ...
+</code></pre>
+
+would be enough. And it is, in a way: 
+
+<pre class="sh_ruby"><code>
+  SimpleParser.new.number.parse('123')  # => {:number=>"123"@0}
+</code></pre>
+
+So you launch the full example (without extracting the number parser) and you
+get this: 
+
+<pre class="sh_bash"><code>
+  > ruby simple.rb
+  Duplicate subtrees while merging result of 
+    IFTHENELSE
+  only the values of the latter will be kept. (keys: [:number])
+  Duplicate subtrees while merging result of 
+    IFTHENELSE
+  only the values of the latter will be kept. (keys: [:number])
+  {:number=>"3"@17}
+</code></pre>
+
+The warnings that parslet outputs can be shut up with <code>-W0</code> on the
+command line, but the result is hardly what we expect. (what about 1 and 2?)
+So the warnings probably mean something. To explain this, I'd like to dive
+into what parslet does with the output from its parsing stages (also called
+atoms).
+
+h2. Output Merging Algorithm (Handwaving Version)
+
+Let's consider a parser that has no tags (<code>.as(...)</code>) in it. The
+two basic atoms of such a parser will have strings as output: 
+
+<pre class="sh_ruby"><code>
+  str('a').parse('a')   # => "a"@0
+  match['a'].parse('a') # => "a"@0
+</code></pre>
+
+This is always the case. As shown above, the entire parser will have the 
+input string as output. Here are the stages such an input string goes through
+before being returned to you: 
+
+<pre class="sh_ruby"><code>
+  parser = str('a') >> str('b') >> str('c')
+  input  = 'abc'
+
+  # Stage 1: Sequence matching result (yes, a Ruby Array)
+  ["a"@0, "b"@1, "c"@2]
+  
+  # Stage 2: Merging ajacent strings
+  "abc"@0
+</code></pre>
+
+From this, we'll deduce merge rule #1: _Elements of a sequence or a repetition
+match are concatenated if they're strings._ This rule is enough to explain the
+first result we had above where our <code>:ifthenelse</code> rule would return
+the string we fed into it. 
+
+Let's inspect what happens when we start tagging. The most interesting case is
+partial tagging, since that is what occurs most often in real life. The things
+we parse contain delimiters that are not signal, but syntactic noise: 
+
+<pre class="sh_ruby"><code>
+  parser = str('a') >> str('b').as(:important) >> str('c')
+  
+  # Stage 1: Basic matching
+  ["a"@0, {:important => "b"@1}, "c"@2]
+    
+  # Stage 2: Merge
+  {:important=>"b"@1}
+</code></pre>
+
+Here's rule #2: _In mixed sequences and repetitions, hashes (tagged elements)
+win._
+
+Now to add a last element, let's also look at how multiple tags are handled: 
+
+<pre class="sh_ruby"><code>
+  parser = str('a') >> str('b').as(:b) >> str('c').as(:c)
+  
+  # Stage 1: Basic matching
+  ["a"@0, {:b=>"b"@1}, {:c=>"c"@2}]
+  
+  # Stage 2: Merge
+  {:b=>"b"@1, :c=>"c"@2}
+</code></pre>
+
+And here's rule #3: _In sequences, hashes mean a named subtree. As such, the
+branches are merged into one hash._
+
+h2. Why the "Duplicate subtrees" Message?
+
+We now have enough rules for figuring out what the message
+
+<pre class="sh_bash"><code>
+  Duplicate subtrees while merging result of 
+    IFTHENELSE
+  only the values of the latter will be kept. (keys: [:number])
+</code></pre>
+
+means. Each of the parser atoms <code>:_if</code>, <code>:_then</code> and
+<code>:_else</code> essentially output <code>{:number => X}</code>. (#2) Those
+are then merged together into one hash. (#3) Since all of them have a single
+key <code>:number</code>, parslet cannot merge them together without
+discarding information. As output we get 
+
+<pre class="sh_ruby"><code>
+  {:number=>"3"@17}
+  # result of 
+  {:number=>"1"@3}.merge({:number=>"2"@10}).merge({:number=>"3"@17})
+</code></pre>
+
+h2. How to fix this
+
+To fix this, you will need to provide parslet with more information on how
+to arrange the information: 
+
+<pre class="sh_ruby"><code>
+  class SimpleParser < Parslet::Parser
+    # ...
+    rule(:_if)    { str('if') >> space? >> number.as(:cond) }
+    rule(:_then)  { str('then') >> space? >> number.as(:then) }
+    rule(:_else)  { str('else') >> space? >> number.as(:else) }
+    # ...
+  end
+  
+  SimpleParser.new.parse(%Q(if 1 then 2 else 3))
+  # => {:cond=>{:number=>"1"@3}, :then=>{:number=>"2"@10}, :else=>{:number=>"3"@17}}
+</code></pre>
+
+Results are still merged together, but this time the keys are all distinct.
+Hence no warning and no discarded information. 
+
+h2. And Transformation
+
+Let's consider transforming this into something useful:
+
+<pre class="sh_ruby"><code>
+  class SimpleTransform < Parslet::Transform
+    rule(:number => simple(:n)) { Integer(n) }
+
+    rule(
+      :cond => simple(:c), 
+      :then => simple(:t), 
+      :else => simple(:e)) { [c, t, e] }
+  end
+  
+  SimpleTransform.new.apply(SimpleParser.new.parse(%Q(if 1 then 2 else 3)))
+  # => [1, 2, 3]
+</code></pre>
+
+As you can see, a first rule transforms all <code>:numbers</code> into real
+Ruby numbers in one single step. A second rule then uses the semantic tags to
+reorder the information in the tree into a simple triplet of [COND, THEN,
+ELSE].
+
+This shows that both levels of tags (<code>:numbers</code> and
+<code>:if/:then/:else</code>) are needed and useful. 
+
+Careful readers will have noticed that the above Transformer is missing a 
+rule for the case where 'else' is missing. Here's the full Transformer: 
+
+<pre class="sh_ruby"><code>
+  class SimpleTransform < Parslet::Transform
+    rule(:number => simple(:n)) { Integer(n) }
+
+    rule(
+      :cond => simple(:c), 
+      :then => simple(:t), 
+      :else => simple(:e)) { [c, t, e] }
+    rule(
+      :cond => simple(:c), 
+      :then => simple(:t)) { [c, t, nil] }
+  end
+  
+  SimpleTransform.new.apply(SimpleParser.new.parse(%Q(if 1 then 2)))
+  # => [1, 2, nil]
+</code></pre>
+
+Due to the nature of the transformers in parslet the case distinction gets
+folded into multiple pattern matching rules. This is supposed to remind
+you of functional programming - Duplication is a good thing, at least here. 
+
+h2. Wrapping it up
+
+I've tried to show some of the more technical aspects of parsing and
+transformation. We've seen how parser output gets mangled to throw away
+all those strings parslet deems unimportant to you. With the three rules given
+above, you will be able to reason about this stage.
+
+Also, I hope to inspire a 'more is more' approach in connection with
+transformer rules. Rule actions should not handle case distinctions; a
+properly encoded tree will contain enough variety to be able to match
+different cases directly. It goes without saying that the code in these blocks
+should be kept short, since some of it will be repeated.
