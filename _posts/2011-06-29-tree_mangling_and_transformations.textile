@@ -95,10 +95,10 @@ before being returned to you:
   "abc"@0
 </code></pre>
 
-From this, we'll deduce merge rule #1: _Elements of a sequence or a repetition
-match are concatenated if they're strings._ This rule is enough to explain the
-first result we had above where our <code>:ifthenelse</code> rule would return
-the string we fed into it. 
+From this, we'll deduce *merge rule #1*: _Elements of a sequence or a
+repetition match are concatenated if they're strings._ This rule is enough to
+explain the first result we had above where our <code>:ifthenelse</code> rule
+would return the string we fed into it.
 
 Let's inspect what happens when we start tagging. The most interesting case is
 partial tagging, since that is what occurs most often in real life. The things
@@ -114,8 +114,8 @@ we parse contain delimiters that are not signal, but syntactic noise:
   {:important=>"b"@1}
 </code></pre>
 
-Here's rule #2: _In mixed sequences and repetitions, hashes (tagged elements)
-win._
+Here's *rule #2*: _In mixed sequences and repetitions, hashes (tagged
+elements) and arrays (collections of tagged elements) are retained._
 
 Now to add a last element, let's also look at how multiple tags are handled: 
 
@@ -129,7 +129,7 @@ Now to add a last element, let's also look at how multiple tags are handled:
   {:b=>"b"@1, :c=>"c"@2}
 </code></pre>
 
-And here's rule #3: _In sequences, hashes mean a named subtree. As such, the
+And here's *rule #3*: _In sequences, hashes mean a named subtree. As such, the
 branches are merged into one hash._
 
 h2. Why the "Duplicate subtrees" Message?
@@ -227,7 +227,7 @@ you of functional programming - Duplication is a good thing, at least here.
 
 h2. Wrapping it up
 
-I've tried to show some of the more technical aspects of parsing and
+I've tried to show you some of the more technical aspects of parsing and
 transformation. We've seen how parser output gets mangled to throw away
 all those strings parslet deems unimportant to you. With the three rules given
 above, you will be able to reason about this stage.
