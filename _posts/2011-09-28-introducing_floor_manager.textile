@@ -1,0 +1,266 @@
+---
+title: Introducing the floor_manager plugin
+tags: 
+  - activerecord
+  - datamapper
+  - rails
+  - sinatra
+---
+
+One of the decisions a modern development team has to make is: *What kind of
+fixture framework should we use?* By now, I hope that YAML fixtures have failed you...
+
+In this blog post, I will tell you about the answer I've found and why I think
+it is useful. But please, do not think that mine is the only answer in the
+field. Look for "factory_girl":http://rubygems.org/gems/factory_girl and
+others.
+
+h2. floor_manager
+
+As of today, I've released the floor_manager gem, which you can install in the
+usual manner. To be able to tell you how to create fixtures using that gem,
+here's a few datamapper models that I'll be creating a fixture for: 
+
+<pre class="sh_ruby"><code>
+class Person
+  has n, :accounts
+  has n, :groups
+  
+  property :full_name, String
+  property :age, Integer
+end
+
+class Account
+  belongs_to :person
+  belongs_to :primary_group, model: 'Group'
+  
+  property :name, String, key: true
+end
+class Group
+  belongs_to :person
+  
+  property :name, String, key: true
+end
+</code></pre>
+
+This is datamapper syntax for Ruby 1.9. If someone translates this into
+ActiveRecord, the following examples will all work.
+
+Let's create a series of fixtures for these three models. Incidentally, they
+will serve to illustrate almost all aspects of floor_manager.
+
+h2. Factory floors
+
+The line is: "floor_manager doesn't just handle individual girls, it handles
+entire factory floors. And it is even less sexistic, since it handles
+employees, not just 'girls'". You say: yes, but *what does it mean?*
+
+A floor is a namespace of fixture objects. Such a floor contains employees,
+individual fixture templates or singletons. A really simple floor looks like
+this:
+
+<pre class="sh_ruby"><code>
+FloorManager.define(:my_simple_floor) do
+  one :employee do
+    name 'John Doe'
+  end
+end
+</code></pre>
+
+This defines a singleton fixture (more about that later) named :employee, an 
+instance of the <code>Employee</code> class. This employees name field is then
+set to 'John Doe'. 
+
+Here's how you use :employee in your specs: 
+
+<pre class="sh_ruby"><code>
+describe "some spec" do
+  let(:floor) { FloorManager.get(:my_simple_floor) }
+  let(:employee) { floor.employee }
+end
+</code></pre>
+
+This gives you an instance of Employee (imagine this is also a model you have)
+with 'name' filled in, but not saved. In fact, it is aequivalent to calling
+<code>floor.build(:employee)</code>. Here are some other ways to get objects
+from the floor: 
+
+<pre class="sh_ruby"><code>
+floor.create(:employee) # => a saved model, provided it could be saved.
+floor.build(:employee) # => build, but don't persist, see above
+floor.attrs(:employee) # => just an attribute hash
+</code></pre>
+
+As you can see from the above code, floor_manager forces you to name your
+fixture spaces. It also encourages you to start new fixture spaces per topic.
+Or maybe even one per spec?
+
+Floor definitions go into normal ruby files that you keep below <code>spec/support</code>. Or anywhere else. You will then require these files
+in your <code>spec_helper.rb</code>.
+
+h2. Simple fixtures: Singletons
+
+What does the term singletons mean? It refers to what you already do when 
+you use YAML fixtures: Singletons only ever exist once in memory and also 
+only once in the database, if they are created or saved. 
+
+Here's a floor with a singleton: 
+
+<pre class="sh_ruby"><code>
+FloorManager.define(:singleton) do
+  one :john_doe, model: Person do
+    full_name 'John Doe'
+  end
+end
+</code></pre>
+
+When you use <code>floor.create(:john_doe)</code> in your specs, you will
+trigger one database INSERT and then subsequently just access the instance you
+generated. This can be helpful when you really want just one
+john_doe in all your tests, let's say he's your system administrator and you
+want to test with <code>:john_doe</code> specifically, not just _a_ john doe.
+
+h2. Generators
+
+Let's say you define the floor <code>:generators</code> as follows: 
+
+<pre class="sh_ruby"><code>
+FloorManager.define(:generators) do
+  any :person do
+    full_name 'John Doe'
+  end
+end
+</code></pre>
+
+When you now access <code>:person</code> from the floor through any of the
+methods on floor (<code>#create</code>, <code>#build</code>,
+<code>#attrs</code>) you will get a new instance every time. This means that
+each <code>#create</code> will trigger an INSERT, if the created model is
+valid.
+
+Generators[1] often need to create random integers or strings for each of their
+instances. Here's how you would do that: 
+
+<pre class="sh_ruby"><code>
+FloorManager.define(:generators_random) do
+  any :person do
+    full_name.string(8)
+    age.integer(21..50)
+  end
+end
+</code></pre>
+
+I guess that is pretty self-explanatory. This gives you any kind of person
+that is legally of age but not yet retired. 
+
+Note that random generation is not one of floor_managers main strengths. Sorry. Use this: 
+
+<pre class="sh_ruby"><code>
+any :person do
+  full_name { ... create a name here }
+end
+</code></pre>
+
+This should get you where you would need to be to use any of the available
+pseudo-data generation libraries.
+
+h2. Associations
+
+Here's how you would create a Person instance with Account and Group attached: 
+
+<pre class="sh_ruby"><code>
+FloorManager.define(:full_example) do
+  one :person do
+    full_name 'John Doe'
+    age.integer(20..50)
+    
+    groups.append :group
+    accounts.append :account
+  end
+  one :group do
+    name.string(8)
+  end
+  one :account do
+    name.string(8)
+    primary_group.set :group
+  end
+end
+</code></pre>
+
+Collections have the <code>#append</code> method for adding objects to them, 
+methods that accept a single object should be filled with <code>#set</code>.
+
+When I now call 
+
+<pre class="sh_ruby"><code>
+  person = floor.create(:person)
+</code></pre>
+
+I will get a Person instance that has a group and an account attached. The 
+above statement yanks an entire object graph into existence! I think that is 
+pretty cool. 
+
+If you're asking yourself why I didn't use <code>any</code> in the above
+example, please think it through and post the answer in the comments. I'll
+post the real reason about next week...
+
+h2. Setup, Teardown: Caveats
+
+Like all good things, floor_manager has a few caveats attached, things to remember. 
+
+Before you can use fixtures (any kind of fixtures, really), you will need to
+*reset your database to a known state*. I mostly prefer this to be an empty
+database, best achieved with
+"database_cleaner":http://rubygems.org/gems/database_cleaner. Have a look at
+that project and install this properly, then you can forget about
+floor_manager preconditions.
+
+When you don't remember this, what will happen is the following: You'll
+eventually create an object that has some kind of unique constraint (like
+<code>Account</code> and <code>Group</code> above) twice. The second time
+around, the INSERT fails. You get an error message that looks like it's coming
+from floor_manager, but really is issued by your ORM system. And the insert
+fails. And you can't execute your spec. This means a spec fails because you
+have a side effect via the database from an earlier spec, something you
+_absolutely_ want control over/ never to happen. So run already, use
+"database_cleaner":http://rubygems.org/gems/database_cleaner, in any of its
+modes!
+
+Also, since FloorManager retains some (global :() state, you will *need to
+call <code>FloorManager.reset</code> before each spec*. This is best achieved
+with the following bit in spec_helper.rb:
+
+<pre class="sh_ruby"><code>
+Rspec.configure do |config|
+  # other stuff...
+  
+  config.before(:each) { FloorManager.reset }
+end
+</code></pre>
+
+h2. Works With
+
+* Rails & ActiveRecord
+* Sinatra & Datamapper
+* Probably a lot of other stuff: It is written to be flexible and environment-agnostic.
+
+h2. Why you should use floor manager
+
+Because it gives you 
+
+* fixtures as code
+* separation of fixtures
+* access to attributes and unsaved objects
+* flexibility between generator and singletons
+* yanks entire object graphs into existence!
+
+So 
+
+<pre><code class="sh_bash">
+$ gem install floor_manager
+</code></pre>
+
+right now! The mgmt.
+
+[1] Generators are what factory_girl calls a 'factory'. The factories of 
+floor_manager build bigger items.
