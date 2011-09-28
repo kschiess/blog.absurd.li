@@ -17,9 +17,9 @@ module Helpers
   
   def countify(number)
     case number
-      when 1: '1st'
-      when 2: '2nd'
-      when 3: '3rd'
+      when 1 then '1st'
+      when 2 then '2nd'
+      when 3 then '3rd'
     else
       "#{number}th"
     end
