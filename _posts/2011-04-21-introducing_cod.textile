@@ -21,6 +21,9 @@ meantime, please look at
 "github.com/kschiess/cod":https://github.com/kschiess/cod to get an idea. Try
 it out and send me feedback!
 
+UPDATE (2012-03-31): I've since rewritten cod from scratch. Some of the stuff
+talked about here will not work anymore.
+
 h2. Building on small elements
 
 One of the main ideas of parslet was to build on small elements and to

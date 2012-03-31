@@ -1,0 +1,138 @@
+---
+title: cod is a fiction
+tags: 
+  - cod
+  - ruby
+  - beanstalk
+  - pipes
+  - zack
+  - rpc
+  - unix
+---
+
+_TL;DR About what cod is not and what it is; and on how a good story builds
+the kernel of every API._
+
+I am currently underway documenting _"cod":https://github.com/kschiess/cod_ for
+a broad usage. This is always an interesting process, since writing about a 
+subject seems to be a good way for me to start thinking on other levels than
+just code. 
+
+Let me start by saying what _cod_ is not: 
+
+* *Cod is not a big lump of code* It could have turned out to be, but no, it
+  did not. Cod is a really thin layer over the RPC and IPC mechanisms your OS
+  and Ruby already provide.
+
+* *Cod will not be your only require* It is probable that beyond cod, you will
+  need a few extra libraries to do what you want. It doesn't solve a problem
+  domain all by itself, but it gives you one of the pieces.
+
+So now here's what cod is: 
+  
+h2. Cod is really a fiction
+
+Much more than a set of new functionalities that you can enable only by using 
+cod, it is a fiction. It provides you with a way to think about the world of
+IPC that may very well shape that world for the better. 
+
+Stories like these, once shared with others, allow you to refer to a chunk of
+lifetime by a few words only. Thinking of chunked ('told') memories, you can
+reduce them to what you've told yourself what they are. This reduction is a
+reduction in complexity that we seek in code. In life, too much reduction is
+dangerous, since we're also reducing the stuff life is made of. In code,
+reduction will benefit your life, since you now have time to spend off the
+hook.
+
+To achieve these goals, _cod_ introduces a new abstraction. It uses the
+concept of channels, ways for information to flow. These channels have each a
+<code>#get</code> method that allows you to retrieve information from them.
+And symmetrically, they have a <code>#put</code> method that allows to put
+information into them.
+
+This is the basic thing. There is a small universe around those two: Learning
+how to know when to stop retrieving information, learning how to wait for more
+information without polling. Together, they form the base dictionary for
+programs that use cod; it is a small dictionary composed of only a few
+ideas.
+
+h2. Specifics
+
+And then, once you start using it in real life, you need specific features 
+that your transport provides. An example would be that pipes created by
+<code>IO.pipe</code> are asymmetric: in most processes, you will either read
+from or write to such a pipe. I account for this by having special methods
+in the pipe channel, methods that allow splitting the pipe into two pipes
+that are read- or write-only. 
+
+But wherever possible, I'll do these things without having you notice. For 
+example: If you create a channel like this: 
+
+<pre class="sh_ruby"><code>
+  channel = Cod.pipe
+  fork do
+    # here: #put to the channel
+    channel.put "This is information"
+  end
+  # here: #get from the channel
+  channel.get
+</code></pre>
+
+the split will happen behind the scenes and automatically. In daily use, you 
+need not worry. 
+
+These specifics still follow the philosophy of the library; they try hard not
+to introduce new concepts, but rather stay within the fiction. They are like
+that side-story that you never tell, but for the ones that ask the right
+question. You went to south-america, but why: for a woman. It went nowhere 
+and is irrelevant to your story, but there: motivation for telling the story & 
+it still fits in the frame. 
+
+h2. Environment
+
+Like all good stories, _cod_ takes place in a environment that is not a void.
+There are useful characters around, and it tries to take them into account. Of
+course, these links all cost time; so this area of the library will need to
+grow over time as well. 
+
+For example, a useful transport for information in todays world are queue
+servers. There are a couple of names in this domain: RabbitMQ, beanstalkd,
+redis, zeromq and ... more. A queue fits into the _cod_ fiction by providing a
+transport for information that allows the participants of the communication to
+be on several physical/logical machines or to have non-overlapping lifetimes.
+So _cod_ will, wherever possible and needed, provide channel abstractions of
+these queues. For example you can already do the following: 
+
+<pre class="sh_ruby"><code>
+  channel = Cod.beanstalk('my_message_tube')
+  channel.put [:a, :piece, :of, :information]
+  
+  # and later
+  channel.get # => [:a, :piece, :of, :information]
+</code></pre>
+
+But _cod_ will never become the library to manage these queues. Like a good
+story, it fits into the world around it and doesn't disrupt it; A story that
+disrupts the world around it is called psychotherapy; let's leave that to 
+another library and another day. 
+
+h2. A seed for more
+
+I've talked about how _cod_ is like a story, how it allows to talk about
+the world in reduction to what is important. I've shown how _cod_ deals with 
+nagging questions and the world around it. 
+
+I haven't given you the story, and that was on purpose; if you want the story,
+you can have a few bits "here":/2011/04/21/introducing_cod.html and
+"there":https://github.com/kschiess/cod right now. More documentation will be
+available soon. 
+
+Every API should have a kernel that is story. From there on, things fall in
+place naturally; If the story is crooked, so will the API be; but it will have
+coherence. If the story is fair on the other hand, your programs will look
+nice and work together like a chorus of unicorns. Either way, the building 
+principle called 'story' is valid and applies.
+
+
+
+
