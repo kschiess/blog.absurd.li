@@ -22,6 +22,7 @@ GEM
       syntax (>= 1.0.0)
     multi_json (1.0.3)
     open4 (1.1.0)
+    rake (0.9.2.2)
     syntax (1.0.0)
 
 PLATFORMS
@@ -30,3 +31,4 @@ PLATFORMS
 DEPENDENCIES
   activesupport
   jekyll-haml
+  rake
