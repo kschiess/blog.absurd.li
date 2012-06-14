@@ -1,0 +1,214 @@
+---
+title: HTTP... something
+tags: 
+  - http
+  - libraries
+  - survey
+  - httpi
+  - HTTParty
+  - Typhoeus
+  - httpclient
+---
+
+A survey of HTTP client-side libraries. Too much choice. And my 2 cents. 
+
+Note that these are in no particular order and that the list (still) isn't
+complete. If you have something that deserves a mention here, let me know. I
+will include it for novelty, not for repetition.
+
+h2. "http":https://github.com/tarcieri/http (2011), "nestful":https://github.com/maccman/nestful (2010), "righthttp":https://github.com/hukl/righttp (2010),  "simplehttp":http://simplehttp.rubyforge.org/ (2007),  "http_request.rb":https://github.com/xianhuazhou/http_request.rb (2009),  "plain_http":https://github.com/ctcherry/plain_http (2011)
+
+I have a hard time seeing the differences between these libraries. There sure
+are some, but they might have well copied the API from one another. 
+
+<pre class="sh_ruby"><code>
+  Http.get 'http://example.com'             # http
+  Nestful.get 'http://example.com'          # nestful
+  HTTP.get 'http://example.com'             # righttp
+  SimpleHttp.get "http://www.example.com"   # simplehttp
+  HttpRequest.get('http://www.github.com')  # http_request.rb
+  PlainHTTP.get('http://www.google.com')    # plain_http
+</code></pre>
+
+<code>nestful</code> has probably the most features geared towards JSON. 
+
+It looks as if everyone is scratching the same itch. And an itch that itches
+so bad, you can't be bothered with google anymore. Some of these are better 
+than others and nestful probably deserves its own category based on features, but there. 
+
+h2. "Typhoeus":https://github.com/typhoeus/typhoeus (2009)
+
+Typhoeus is a mythical greek god with 100 fire breathing serpent heads.[1] In
+the case of typhoeus, a head stands metaphorically for a connection - this
+library allows more than one connection be made at the same time. The
+"documentation at github":http://typhoeus.github.com/ has a nice '"getting
+started":http://typhoeus.github.com/articles/getting_started.html' tutorial
+that shows you how to do requests.
+
+Typhoeus really will do parallel requests! If you're someone who calls 100
+backend services on every request (thanks, SOA!), you will need this in one of
+its forms. This library looks very feature complete and advanced, but as you
+might have guessed, this will also work:
+
+<pre class="sh_ruby"><code>
+  Typhoeus::Request.get('http://example.com')
+</code></pre>
+
+An interesting variation here is that you can use Typhoeus as a DSL in your
+classes, giving them HTTP call perks. See "this post":http://www.pauldix.net/2009/05/breath-fire-over-http-in-ruby-with-typhoeus.html from Paul Dix for an in-depth explanation.
+
+h2. "httpadapter":http://httpadapter.rubyforge.org/ (2010)
+
+This isn't a HTTP speaking library, but rather it 'translates HTTP request and
+response objects for various clients into a common representation'. The idea
+seems to be to create a client-side _rack_.[2] 
+
+h2. "http_connection":http://github.com/appoxy/http_connection/ (2009)
+
+This library by RightScale.com seems to attempt to do reliable http
+connections that do connection retries. It doesn't have as many features as
+others, but reliability seems to be something that others don't address.
+
+Is it something that needs to be handled by your HTTP library? 
+
+h2. "httpclient":http://github.com/nahi/httpclient (2007)
+
+This seems to be the most complete client like implementation of HTTP. It has
+things like cookie support. (storing cookies from one request to the next,
+like a browser does)
+
+The "samples":https://github.com/nahi/httpclient/tree/master/sample are very
+informative and should be easy enough to pick up.
+
+<pre class="sh_ruby"><code>
+  client = HTTPClient.new
+  client.get 'http://example.com'
+</code></pre>
+
+h2. "httparty":http://httparty.rubyforge.org/ (2008)
+
+I've never heard of this before today and it seems I am late to the .. well 
+let's not go there. This library is similar to Typhoeus in that it allows you
+to create special purpose classes that encapsulate HTTP functionality. 
+
+Here's the simple example from the project page: 
+
+<pre class="sh_ruby"><code>
+  class Twitter
+    include HTTParty
+    base_uri 'twitter.com'
+    basic_auth 'username', 'password'
+  end
+
+  Twitter.post('/statuses/update.json', :query => 
+    {:status => "It's an HTTParty and everyone is invited!"})
+</code></pre>
+
+It's been around for some time and even though it doesn't seem to be as heavy 
+as Typhoeus is on parallelization, it seems to allow terse special purpose
+HTTP request classes to be written in just a few lines. 
+
+h2. "net-https-wrapper":https://github.com/ujihisa/net-https-wrapper (2009)
+
+This library is special in its minimalism. Its (rather short) gemspec has 
+the same amount of lines as its implementation. The author doesn't seem 
+to think we'd need <code>#get</code>, ever, so it only speaks <code>#post</code> or <code>#put</code>. Is it "art?":https://github.com/ujihisa/net-https-wrapper/commits/master
+
+h2. "http_spew":http://bogomips.org/http_spew/ (2011)
+
+If one of these libraries gets outlawed, it's this one. This seems to be the
+only library I've looked at that doesn't bother with the responses that are
+sent by the server. Instead, it attempts to generate as much traffic as
+possible without reading things back. As the author rightfully remarks, this
+may get you banned from the internet. Or wait. No. Daily business.
+
+h2. "fast_http":http://rubygems.org/gems/fast_http (2010)
+
+"Art?":http://rubygems.org/gems/fast_http Or just plain _fast!_ HTTP? I cannot
+really tell from the documentation.
+
+h2. "net-http-persistent":http://docs.seattlerb.org/net-http-persistent/ (2010), "persistent_http":https://github.com/bpardee/persistent_http (2010)
+
+These libraries are not about the API, but about making HTTP connections
+persistent. This is also something a browser does and probably should be a
+feature of the base library.
+
+_persistent_http_ will allow pooling connections instead of keeping one
+connection per thread.
+
+h2. "net-http-pipeline":http://docs.seattlerb.org/net-http-pipeline/ (2010)
+
+Allows HTTP/1.1 request pipelining: 
+
+<pre class="sh_ruby"><code>
+  require 'net/http/pipeline'
+
+  Net::HTTP.start 'localhost' do |http|
+    req1 = Net::HTTP::Get.new '/'
+    req2 = Net::HTTP::Get.new '/'
+    req3 = Net::HTTP::Get.new '/'
+
+    http.pipeline [req1, req2, req3] do |res|
+      puts res.code
+      puts res.body[0..60].inspect
+      puts
+    end
+  end
+</code></pre>
+
+h2. "HTTPal":http://rubygems.org/gems/HTTPal (2007)
+
+Similar to _httpclient_, this keeps cookies and referrers for you. A simple
+library that seems to either do its job or is abandoned - no releases since the
+initial few.
+
+h2. "httpi":https://github.com/rubiii/httpi (2010)
+
+A common interface to several HTTP backends: This library speaks _curb_,
+_httpclient_ and _net-http_. The idea is that it gives you a simple interface
+to remember and allows all of these backends to be swapped out, depending on
+your needs.
+
+<pre class="sh_ruby"><code>
+  HTTPI.get 'http://www.example.com'    # will work
+</code></pre>
+
+h1. Conclusion
+
+I've used _httpclient_ (for its cookie caps) and _httpi_ (by accident) in the
+past. No gripes with those. Also, I must have used _net-http_ (stdlib) at some
+point. The fact that I didn't write one of these libraries must mean that it
+didn't bother me as much as it did others.
+
+I've added Typhoeus and HTTParty to the list of libraries I would use. The API
+idea behind these makes sense and used in the right place, it will simplify
+things. Typhoeus certainly comes in handy when making hundreds of requests to
+backends.
+
+Interesting to know about: _net-http-persistent_ and _net-http-pipeline_. 
+
+h2. Write another one?
+
+No. 
+
+Perhaps we should all clean up our respective acts and: 
+
+* Use google before using one of the many project skeleton generators that exist. (That is a list to be made another day...)
+
+* Merge some of these? Make better libraries instead of more?
+
+h2. And a parting note
+
+I could make these kind of lists for many problems we
+Rubyists solve. The authors of these libraries are not to blame. (or rather,
+they are only to blame for their part of the problem) The Ruby community as a
+whole is currently experiencing a severe shortness of attention span. If it is
+not new, it is probably crap, right? 
+
+No. We should stop the proliferation of new libraries and start working good
+ideas into the libraries we already have. Also, a good telling sign whether
+you need to release a library is: Is the library bigger than the Gemspec?
+
+fn1. http://www.pauldix.net/2009/05/breath-fire-over-http-in-ruby-with-typhoeus.html
+
+fn2. http://httpadapter.rubyforge.org/api/
