@@ -7,6 +7,16 @@ title: ima progrmr
   .meta
     = link_to('about me', 'http://www.absurd.li')
 
+  %h1 Abadonment Notice Ahead
+  %p
+    This blog is not maintained anymore. It will stay up
+    for your reference; in the meantime, please follow my activities on the other
+    sites linked from the <a href="http://absurd.li">start&nbsp;page</a>. 
+  %p 
+    Also, you might want to know that I write a company newsletter for 
+    the <a href="http://technologyastronauts.ch">Technology Astronauts</a>, to
+    which you can subscribe by clicking the link on the bottom of that page.
+
   - current_year = nil    # ugly, but good enough
   - group_posts_by_month_and_day(site.posts) do |year, month, posts|
     - if current_year != year
